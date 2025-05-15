@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\ApartamentoController;
 use App\Http\Controllers\Api\RolController;
+use App\Http\Controllers\Api\LoginController;
 
 Route::prefix('v1')->group(function () {
     // CRUD Usuarios
@@ -23,5 +24,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/roles/{id}', [RolController::class, 'show']);
         Route::put('/roles/{id}', [RolController::class, 'update']);
         Route::delete('/roles/{id}', [RolController::class, 'destroy']);
+
+       
+
+Route::post('/login', [LoginController::class, 'login']);
+
 
 });
