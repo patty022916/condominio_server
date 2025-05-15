@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('email')->unique()->comment('Medio de comunicación');
             $table->string('password');
-            $table->string('telefono')->comment('Medio de comunicación');
+            $table->string('telefono', 150)->comment('Medio de comunicación');
             $table->foreignId('id_rol')->constrained('roles')->cascadeOnDelete();
             $table->timestamps();
         });
