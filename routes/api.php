@@ -1,33 +1,21 @@
 <?php
 
-use App\Http\Controllers\Api\UsuarioController;
-use App\Http\Controllers\Api\ApartamentoController;
-use App\Http\Controllers\Api\RolController;
-use App\Http\Controllers\Api\LoginController;
 
-Route::prefix('v1')->group(function () {
-    // CRUD Usuarios
-    Route::get('/usuarios', [UsuarioController::class, 'index']);
-    Route::post('/usuarios', [UsuarioController::class, 'store']);
-    Route::get('/usuarios/{id}', [UsuarioController::class, 'show']);
-    Route::put('/usuarios/{id}', [UsuarioController::class, 'update']);
-    Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']);
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\RolesController;
+use App\Http\Controllers\ApartamentosController;
 
-    // Listar apartamentos
-    Route::get('/apartamentos', [ApartamentoController::class, 'index']);
+//USUARIOS
+Route::get('/users', [UsuarioController::class, 'getUsers']);
+Route::post('/users', [UsuarioController::class, 'createUser']);
+Route::post('/users/auth', [UsuarioController::class, 'authenticationUser']);
 
-
-//CRUD de Rol
-
-        Route::get('/roles', [RolController::class, 'index']);
-        Route::post('/roles', [RolController::class, 'store']);
-        Route::get('/roles/{id}', [RolController::class, 'show']);
-        Route::put('/roles/{id}', [RolController::class, 'update']);
-        Route::delete('/roles/{id}', [RolController::class, 'destroy']);
-
-       
-
-Route::post('/login', [LoginController::class, 'login']);
+//ROLES
+Route::get('/roles', [RolesController::class, 'getRoles']);
 
 
-});
+//APARTAMENTOS
+Route::get('/apartamentos', [ApartamentosController::class, 'listarApartamentos']);
+Route::post('/apartamentos/asignar-inquilino', [ApartamentosController::class, 'asignarInquilino']);
