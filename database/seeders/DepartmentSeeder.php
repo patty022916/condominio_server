@@ -25,7 +25,7 @@ class DepartmentSeeder extends Seeder
             $esDosHabitaciones = $i < 28;
 
             DB::table('apartamentos')->insert([
-                'piso' => $faker->numberBetween(1, 10),
+                'piso' => $faker->numberBetween(1, 7),
                 'letra' => $esDosHabitaciones ? $letrasDosHabitaciones[$i % count($letrasDosHabitaciones)]
                     : $letrasTresHabitaciones[($i - 28) % count($letrasTresHabitaciones)],
                 'habitaciones'  => $esDosHabitaciones ? 2 : 3,

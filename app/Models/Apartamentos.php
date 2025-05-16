@@ -49,6 +49,7 @@ class Apartamentos extends Model
             ->join('usuarios as propietarios', 'propietarios.id', '=', 'apartamentos.propietario_id')
             ->leftJoin('usuarios as inquilinos', 'inquilinos.id', '=', 'apartamentos.inquilino_id')
             ->select('apartamentos.*', 'propietarios.nombre as propietario', 'inquilinos.nombre as inquilino')
+            ->orderBy('apartamentos.piso', 'asc')
             ->get();
     }
 }
