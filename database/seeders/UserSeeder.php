@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
         for ($i = 0; $i < 56; $i++) {
             DB::table('usuarios')->insert([
                 'nombre'     => $faker->name,
+                'apellido'   => $faker->lastName,
                 'email'      => $faker->unique()->safeEmail,
                 'password'   => $faker->password,
                 'telefono'   => $faker->phoneNumber,
@@ -31,6 +32,7 @@ class UserSeeder extends Seeder
         DB::table('usuarios')->insert([
             [
                 'nombre'     => 'Louis Sarmiento',
+                'apellido'   => 'Lopez',
                 'email'      => 'slouis482@gmail.com',
                 'password'   => 'admin',
                 'telefono'   => '04123456789',
@@ -40,6 +42,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'nombre'     => 'Patricia Aguilar',
+                'apellido'   => 'Lopez2',
                 'email'      => 'patricia@gmail.com',
                 'password'   => 'admin',
                 'telefono'   => '4120811588',

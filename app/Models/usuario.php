@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Usuario extends Model
 {
-    protected $fillable = ['nombre', 'email', 'telefono', 'password', 'id_rol'];
+    protected $fillable = ['nombre', 'apellido', 'email', 'telefono', 'password', 'id_rol'];
 
 
     /**
@@ -23,6 +23,7 @@ class Usuario extends Model
         SELECT
             usuarios.id,
             usuarios.nombre,
+            usuarios.apellido,
             usuarios.email,
             usuarios.password,
             usuarios.telefono,
@@ -55,7 +56,7 @@ class Usuario extends Model
         $sql = "SELECT * FROM usuarios WHERE email = ? AND password = ?";
         $bindings = [$email, $password];
         $user = DB::select($sql, $bindings);
-     
+
         //si el arreglo esta vacio entonces el usuario no existe credenciales incorrectas
         if (count($user) == 0) {
             return response()->json(['error' => 'Email o clave incorrecta'], 401);

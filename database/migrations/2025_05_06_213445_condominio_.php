@@ -20,6 +20,7 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->string('apellido');
             $table->string('email')->unique()->comment('Medio de comunicación');
             $table->string('password');
             $table->string('telefono', 150)->comment('Medio de comunicación');
