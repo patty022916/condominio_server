@@ -60,14 +60,13 @@ class UsuarioController extends Controller
     {
         try {
             $data = $request->json()->all();
-
             //!quitamos los espacios
             $data['password'] = trim($data['password']);
             $data['email'] = trim($data['email']);
-
+            
             $usuario = Usuario::authenticationUser($data['email'], $data['password']);
 
-            return response()->json($usuario, 200);
+            return response()->json($usuario[0], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

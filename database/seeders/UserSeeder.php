@@ -29,13 +29,24 @@ class UserSeeder extends Seeder
         }
 
         DB::table('usuarios')->insert([
-            'nombre'     => 'Administrador',
-            'email'      => 'admin@admin.com',
-            'password'   => bcrypt('password'),
-            'telefono'   => '1234567890',
-            'id_rol'     => 1, //*ADMINISTRADOR 
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'nombre'     => 'Louis Sarmiento',
+                'email'      => 'slouis482@gmail.com',
+                'password'   => 'admin',
+                'telefono'   => '04123456789',
+                'id_rol'     => 1, //*ADMINISTRADOR 
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre'     => 'Patricia Aguilar',
+                'email'      => 'patricia@gmail.com',
+                'password'   => 'admin',
+                'telefono'   => '4120811588',
+                'id_rol'     => 1, //*ADMINISTRADOR 
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
     }
 }

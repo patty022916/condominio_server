@@ -55,9 +55,9 @@ class Usuario extends Model
         $sql = "SELECT * FROM usuarios WHERE email = ? AND password = ?";
         $bindings = [$email, $password];
         $user = DB::select($sql, $bindings);
-
+     
         //si el arreglo esta vacio entonces el usuario no existe credenciales incorrectas
-        if (count($user) > 0) {
+        if (count($user) == 0) {
             return response()->json(['error' => 'Email o clave incorrecta'], 401);
             throw new \Exception('Email o clave incorrecta', 400);
         }

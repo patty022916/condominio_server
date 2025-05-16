@@ -31,7 +31,6 @@ class ApartamentosController extends Controller
         try {
             //capturamos el body de la peticion
             $data = $request->json()->all();
-
             //retornamos el apartamento editado
             $apartamento = Apartamentos::asignarInquilino($data['id_inquilino'], $data['id_apartamento']);
 
