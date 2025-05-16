@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Apartamentos extends Model
 {
@@ -34,5 +35,20 @@ class Apartamentos extends Model
         $apartamentos->save();
 
         return $apartamentos;
+    }
+
+    /**
+     * Obtenemos los apartamentos con el nombre del propietario y el inquilino
+     *
+     * @return array
+     * 
+     */
+    public static function getApartamentos()
+    {
+        return DB::table('apartamentos')
+            ->join('usuarios as propietarios', 'propietarios.id', '=', 'apartamentos.propietario_id')
+            ->leftJoin('usuarios as inquilinos', 'inquilinos.id', '=', 'apartamentos.inquilino_id')
+            ->select('apartamentos.*', 'propietarios.nombre as propietario', 'inquilinos.nombre as inquilino')
+            ->get();
     }
 }

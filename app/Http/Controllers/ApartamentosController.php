@@ -11,8 +11,8 @@ class ApartamentosController extends Controller
     public function listarApartamentos(Request $request)
     {
         try {
-
-            return response()->json(Apartamentos::all(), 200);
+            $apartamentos = Apartamentos::getApartamentos();
+            return response()->json($apartamentos, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
