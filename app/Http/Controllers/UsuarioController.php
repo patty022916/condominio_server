@@ -27,7 +27,7 @@ class UsuarioController extends Controller
             $validatedData = $request->validate([
                 'id' => 'nullable|integer',
                 'nombre' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255',
+                'email' => 'required|string',
                 'password' => 'required',
                 'telefono' => 'nullable|string|max:15',
                 'id_rol' => 'required|integer',
@@ -48,7 +48,7 @@ class UsuarioController extends Controller
                 $usuario->update($validatedData);
             }
 
-            $usuario = Usuario::getUserDataComplete($validatedData['id']);
+            $usuario = Usuario::getUserDataComplete($usuario->id);
 
             return response()->json($usuario[0], 200);
         } catch (\Exception $e) {
@@ -71,5 +71,14 @@ class UsuarioController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+
+    public function deleteUser($id)
+    {
+        $usuario = Usuario::find($id);
+        $usuario->delete();
+
+        return response()->json(['mensaje' => 'Usuario eliminado correctamente']);
     }
 }

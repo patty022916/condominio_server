@@ -11,6 +11,7 @@ use App\Http\Controllers\ApartamentosController;
 Route::get('/users', [UsuarioController::class, 'getUsers']);
 Route::post('/users', [UsuarioController::class, 'createUser']);
 Route::post('/users/auth', [UsuarioController::class, 'authenticationUser']);
+Route::delete('/users/{id}', [UsuarioController::class, 'deleteUser']);
 
 //ROLES
 Route::get('/roles', [RolesController::class, 'getRoles']);
