@@ -64,7 +64,7 @@ class RoleSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                "nombre" => "Empleado",
+                "nombre" => "Presidente",
                 "permisos" => json_encode([
                     ["id" => 1, "key" => "key_modulo1", "name" => "modulo1", "view" => false, "create" => false, "update" => false, "delete" => false],
                     ["id" => 2, "key" => "key_modulo2", "name" => "modulo2", "view" => true, "create" => true, "update" => true, "delete" => false],
