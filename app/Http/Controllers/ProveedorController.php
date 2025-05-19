@@ -61,28 +61,55 @@ class ProveedorController extends Controller
             if (!$proveedor) {
                 throw new \Exception("Proveedor no encontrado", 404);
             }
-
-            // Actualizar solo campos permitidos
-            $data = $request->only(['nombre', 'servicio', 'telefono']);
-            DB::table('proveedores')->where('id', $id)->update([
-                ...$data,
-                'updated_at' => now()
+    
+            // Validar datos de entrada
+            $request->validate([
+                'nombre' => 'sometimes|string|max:255',
+                'servicio' => 'sometimes|string|max:255',
+                'telefono' => 'sometimes|string|max:20'
             ]);
-
+    
+            // Preparar datos para actualizar
+            $updateData = [];
+            if ($request->has('nombre')) $updateData['nombre'] = $request->nombre;
+            if ($request->has('servicio')) $updateData['servicio'] = $request->servicio;
+            if ($request->has('telefono')) $updateData['telefono'] = $request->telefono;
+            
+            // Verificar si hay datos para actualizar
+            if (empty($updateData)) {
+                throw new \Exception("No se proporcionaron datos para actualizar", 400);
+            }
+    
+            // Agregar fecha de actualización
+            $updateData['updated_at'] = now();
+    
+            // Ejecutar actualización
+            $affected = DB::table('proveedores')
+                ->where('id', $id)
+                ->update($updateData);
+    
+            if ($affected === 0) {
+                throw new \Exception("No se realizaron cambios", 200);
+            }
+    
             return response()->json([
                 'success' => true,
                 'data' => DB::table('proveedores')->where('id', $id)->first(),
-                'message' => 'Proveedor actualizado'
+                'message' => 'Proveedor actualizado correctamente'
             ], 200);
-
+    
         } catch (\Exception $e) {
+            $statusCode = $e->getCode() ?: 500;
+            if ($statusCode < 100 || $statusCode > 599) {
+                $statusCode = 500;
+            }
+            
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage()
-            ], $e->getCode() ?: 500);
+            ], $statusCode);
         }
     }
-
     /**
      * Eliminar un proveedor.
      */
