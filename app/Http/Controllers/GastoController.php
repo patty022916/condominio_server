@@ -17,7 +17,6 @@ class GastoController extends Controller
                 'monto' => 'required|numeric|min:0.01',
                 'tipo_gasto' => 'required|in:fijo,comun,extraordinario',
                 'id_proveedor' => 'nullable|exists:proveedores,id',
-                'user_id' => 'required|exists:usuarios,id',
                 'recurrente' => 'sometimes|boolean',
                 'fecha' => 'sometimes|date|date_format:Y-m-d'
             ]);
@@ -29,7 +28,7 @@ class GastoController extends Controller
                 'fecha' => $validated['fecha'] ?? now()->format('Y-m-d'),
                 'id_proveedor' => $validated['id_proveedor'] ?? null,
                 'recurrente' => $validated['recurrente'] ?? false,
-                'user_id' => $validated['user_id']
+                
             ]);
     
             DB::commit();

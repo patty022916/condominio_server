@@ -33,3 +33,13 @@ Route::prefix('proveedores')->group(function () {
     Route::put('/{id}', [ProveedorController::class, 'update']); // PUT /api/proveedores/1
     Route::delete('/{id}', [ProveedorController::class, 'destroy']); // DELETE /api/proveedores/1
 });
+// NOTIFICACIONES
+
+Route::prefix('notificaciones')->group(function () {
+    Route::get('/', [NotificacionController::class, 'index']);       // Listar
+    Route::post('/', [NotificacionController::class, 'store']);      // Crear
+    Route::get('/{id}', [NotificacionController::class, 'show']);    // Ver detalle
+    Route::put('/{id}', [NotificacionController::class, 'update']);  // Actualizar
+    Route::delete('/{id}', [NotificacionController::class, 'destroy']); // Eliminar
+    Route::put('/{id}/leer', [NotificacionController::class, 'marcarLeida']); // Marcar como leída
+});
