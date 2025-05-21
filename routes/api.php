@@ -35,11 +35,4 @@ Route::prefix('proveedores')->group(function () {
 });
 // NOTIFICACIONES
 
-Route::prefix('notificaciones')->group(function () {
-    Route::get('/', [NotificacionController::class, 'index']);       // Listar
-    Route::post('/', [NotificacionController::class, 'store']);      // Crear
-    Route::get('/{id}', [NotificacionController::class, 'show']);    // Ver detalle
-    Route::put('/{id}', [NotificacionController::class, 'update']);  // Actualizar
-    Route::delete('/{id}', [NotificacionController::class, 'destroy']); // Eliminar
-    Route::put('/{id}/leer', [NotificacionController::class, 'marcarLeida']); // Marcar como leída
-});
+Route::post('/notificaciones', [NotificacionController::class, 'store']);

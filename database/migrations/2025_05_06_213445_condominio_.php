@@ -77,12 +77,14 @@ return new class extends Migration
         // Tabla notificaciones
         Schema::create('notificaciones', function (Blueprint $table) {
             $table->id();
-            $table->string('motivo');
-            $table->string('descripcion')->nullable();
+            $table->string('titulo');
+            $table->text('mensaje')->nullable();
+            $table->enum('tipo', ['cobro','reunion','alerta','general']);
             $table->foreignId('id_usuario')->constrained('usuarios')->cascadeOnDelete();
+            $table->timestamp('leida_at')->nullable();
             $table->timestamps();
         });
-
+        
         // Tabla deudas_apartamentos
         Schema::create('deudas_apartamentos', function (Blueprint $table) {
             $table->id();
