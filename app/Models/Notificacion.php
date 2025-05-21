@@ -3,20 +3,39 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class Notificacion extends Model
 {
-    protected $fillable = ['titulo', 'mensaje', 'tipo', 'id_usuario'];
+    protected $table = 'notificaciones';
+    protected $fillable = [
+        'titulo',
+        'mensaje',
+        'tipo',
+        'id_usuario'
+    ];
 
-    //Crear una nueva notificación
-   
-    public static function crearNotificacion(array $datos)
+    /**
+     * Crea una nueva notificación
+     */
+    public static function crearNotificacion(array $data)
     {
-        return self::create([
-            'titulo' => $datos['titulo'],
-            'mensaje' => $datos['mensaje'] ?? null,
-            'tipo' => $datos['tipo'],
-            'id_usuario' => $datos['id_usuario']
-        ]);
+        try {
+            // Insertar en BD
+            $notificacionId = DB::table('notificaciones')->insertGetId([
+                'titulo' => trim($data['titulo']),
+                'mensaje' => $data['mensaje'] ?? null,
+                'tipo' => $data['tipo'],
+                'id_usuario' => $data['id_usuario'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            return DB::table('notificaciones')->where('id', $notificacionId)->first();
+
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 }

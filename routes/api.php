@@ -8,6 +8,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ApartamentosController;
 use App\Http\Controllers\GastoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\NotificacionController;
 
 //USUARIOS
 Route::get('/users', [UsuarioController::class, 'getUsers']);
@@ -35,4 +36,10 @@ Route::prefix('proveedores')->group(function () {
 });
 // NOTIFICACIONES
 
-Route::post('/notificaciones', [NotificacionController::class, 'store']);
+// NOTIFICACIONES
+Route::prefix('notificaciones')->group(function () {
+    Route::post('/', [NotificacionController::class, 'store']); // crear notificacion
+    Route::get('/usuario/{userId}', [NotificacionController::class, 'index']);
+    Route::put('/marcar-leida/{id}', [NotificacionController::class, 'marcarLeida']);
+    Route::delete('/{id}', [NotificacionController::class, 'destroy']);
+});

@@ -7,29 +7,34 @@ use App\Models\Notificacion;
 
 class NotificacionController extends Controller
 {
+    /**
+     * Crear una nueva notificación
+     */
     public function store(Request $request)
     {
         try {
-            $validatedData = $request->validate([
+            // Validación de campos
+            $request->validate([
                 'titulo' => 'required|string|max:255',
                 'mensaje' => 'nullable|string',
                 'tipo' => 'required|in:cobro,reunion,alerta,general',
-                'id_usuario' => 'required|integer|exists:usuarios,id',
+                'id_usuario' => 'required|exists:usuarios,id'
             ]);
 
-            $notificacion = Notificacion::crearNotificacion($validatedData);
-
+            $notificacion = Notificacion::crearNotificacion($request->all());
+            
             return response()->json([
-                'id' => $notificacion->id,
-                'titulo' => $notificacion->titulo,
-                'mensaje' => $notificacion->mensaje,
-                'tipo' => $notificacion->tipo,
-                'id_usuario' => $notificacion->id_usuario,
-                'created_at' => $notificacion->created_at
+                'success' => true,
+                'data' => $notificacion,
+                'message' => 'Notificación creada correctamente'
             ], 201);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'code' => $e->getCode() ?: 500
+            ], $e->getCode() ?: 500);
         }
     }
 }
