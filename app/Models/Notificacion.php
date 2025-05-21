@@ -8,12 +8,12 @@ use Exception;
 
 class Notificacion extends Model
 {
-    protected $table = 'notificaciones';
     protected $fillable = [
         'titulo',
         'mensaje',
         'tipo',
-        'id_usuario'
+        'id_usuario',
+        'leida_at'
     ];
 
     /**
@@ -22,12 +22,14 @@ class Notificacion extends Model
     public static function crearNotificacion(array $data)
     {
         try {
+             
             // Insertar en BD
             $notificacionId = DB::table('notificaciones')->insertGetId([
                 'titulo' => trim($data['titulo']),
                 'mensaje' => $data['mensaje'] ?? null,
                 'tipo' => $data['tipo'],
                 'id_usuario' => $data['id_usuario'],
+                'leida_at' => null,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);

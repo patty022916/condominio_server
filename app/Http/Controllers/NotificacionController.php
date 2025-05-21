@@ -18,7 +18,8 @@ class NotificacionController extends Controller
                 'titulo' => 'required|string|max:255',
                 'mensaje' => 'nullable|string',
                 'tipo' => 'required|in:cobro,reunion,alerta,general',
-                'id_usuario' => 'required|exists:usuarios,id'
+                'id_usuario' => 'required|exists:usuarios,id',
+                'leida_at' => 'nullable|date'
             ]);
 
             $notificacion = Notificacion::crearNotificacion($request->all());
@@ -30,11 +31,7 @@ class NotificacionController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-                'code' => $e->getCode() ?: 500
-            ], $e->getCode() ?: 500);
+             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
