@@ -10,6 +10,7 @@ use App\Http\Controllers\GastoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\NotificacionController;
 
+
 //USUARIOS
 Route::get('/users', [UsuarioController::class, 'getUsers']);
 Route::post('/users', [UsuarioController::class, 'createUser']);
@@ -34,11 +35,20 @@ Route::prefix('proveedores')->group(function () {
     Route::put('/{id}', [ProveedorController::class, 'update']); // PUT /api/proveedores/1
     Route::delete('/{id}', [ProveedorController::class, 'destroy']); // DELETE /api/proveedores/1
 });
-// NOTIFICACIONES
+
 
 // NOTIFICACIONES
+
 Route::prefix('notificaciones')->group(function () {
-    Route::post('/', [NotificacionController::class, 'store']);
+    Route::post('/', [NotificacionController::class, 'store']); // Crear
+    Route::get('/{id}', [NotificacionController::class, 'show']); // Ver por ID
+    Route::get('/usuario/{id_usuario}', [NotificacionController::class, 'listarPorUsuario']); // Listar por usuario
+    Route::put('/{id}', [NotificacionController::class, 'update']); // Actualizar
+    Route::patch('/{id}/leida', [NotificacionController::class, 'marcarComoLeida']); // Marcar como leída
+    Route::delete('/{id}', [NotificacionController::class, 'destroy']); // Eliminar
+});
+
+
+
    
  
-});
