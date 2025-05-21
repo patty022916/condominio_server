@@ -14,17 +14,11 @@ class ProveedorController extends Controller
     public function index()
     {
         try {
-            $proveedores = DB::table('proveedores')->get();
-            return response()->json([
-                'success' => true,
-                'data' => $proveedores
-            ], 200);
 
+            $proveedores = DB::table('proveedores')->get();
+            return response()->json($proveedores, 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -34,19 +28,18 @@ class ProveedorController extends Controller
     public function store(Request $request)
     {
         try {
-            $proveedor = Proveedor::crearProveedor($request->only(['nombre', 'servicio', 'telefono']));
-            return response()->json([
-                'success' => true,
-                'data' => $proveedor,
-                'message' => 'Proveedor creado correctamente'
-            ], 201);
+            $validatedData = $request->validate([
+                'nombre' => 'required|string|max:255',
+                'servicio' => 'required|string|max:255',
+                'telefono' => 'required|string|max:20',
 
+            ]);
+
+            $proveedor = Proveedor::crearProveedor($validatedData);
+
+            return response()->json($proveedor, 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-                'code' => $e->getCode() ?: 500
-            ], $e->getCode() ?: 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -56,58 +49,18 @@ class ProveedorController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            // Validar existencia
-            $proveedor = DB::table('proveedores')->where('id', $id)->first();
-            if (!$proveedor) {
-                throw new \Exception("Proveedor no encontrado", 404);
-            }
-    
-            // Validar datos de entrada
-            $request->validate([
-                'nombre' => 'sometimes|string|max:255',
-                'servicio' => 'sometimes|string|max:255',
-                'telefono' => 'sometimes|string|max:20'
+            $validatedData = $request->validate([
+                'nombre' => 'required|string|max:255',
+                'servicio' => 'required|string|max:255',
+                'telefono' => 'required|string|max:20',
             ]);
-    
-            // Preparar datos para actualizar
-            $updateData = [];
-            if ($request->has('nombre')) $updateData['nombre'] = $request->nombre;
-            if ($request->has('servicio')) $updateData['servicio'] = $request->servicio;
-            if ($request->has('telefono')) $updateData['telefono'] = $request->telefono;
-            
-            // Verificar si hay datos para actualizar
-            if (empty($updateData)) {
-                throw new \Exception("No se proporcionaron datos para actualizar", 400);
-            }
-    
-            // Agregar fecha de actualización
-            $updateData['updated_at'] = now();
-    
-            // Ejecutar actualización
-            $affected = DB::table('proveedores')
-                ->where('id', $id)
-                ->update($updateData);
-    
-            if ($affected === 0) {
-                throw new \Exception("No se realizaron cambios", 200);
-            }
-    
-            return response()->json([
-                'success' => true,
-                'data' => DB::table('proveedores')->where('id', $id)->first(),
-                'message' => 'Proveedor actualizado correctamente'
-            ], 200);
-    
+
+            $proveedor = Proveedor::findOrFail($id);
+            $proveedor->update($validatedData);
+
+            return response()->json($proveedor, 200);
         } catch (\Exception $e) {
-            $statusCode = $e->getCode() ?: 500;
-            if ($statusCode < 100 || $statusCode > 599) {
-                $statusCode = 500;
-            }
-            
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], $statusCode);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
     /**
@@ -125,7 +78,6 @@ class ProveedorController extends Controller
                 'success' => true,
                 'message' => 'Proveedor eliminado'
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

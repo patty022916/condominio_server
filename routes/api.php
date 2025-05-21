@@ -8,6 +8,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ApartamentosController;
 use App\Http\Controllers\GastoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\NotificacionController;
 
 //USUARIOS
 Route::get('/users', [UsuarioController::class, 'getUsers']);
