@@ -39,7 +39,6 @@ Route::prefix('proveedores')->group(function () {
 // NOTIFICACIONES
 Route::prefix('notificaciones')->group(function () {
     Route::post('/', [NotificacionController::class, 'store']);
-    Route::get('/usuario/{userId}', [NotificacionController::class, 'index']);
-    Route::put('/marcar-leida/{id}', [NotificacionController::class, 'marcarLeida']);
-    Route::delete('/{id}', [NotificacionController::class, 'destroy']);
+   
+ 
 });
