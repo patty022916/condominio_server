@@ -69,20 +69,14 @@ class ProveedorController extends Controller
     public function destroy($id)
     {
         try {
+
             $deleted = DB::table('proveedores')->where('id', $id)->delete();
             if (!$deleted) {
                 throw new \Exception("Proveedor no encontrado", 404);
             }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Proveedor eliminado'
-            ], 200);
+            return response()->json([], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], $e->getCode() ?: 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

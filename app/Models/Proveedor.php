@@ -20,7 +20,6 @@ class Proveedor extends Model
      */
     public static function crearProveedor(array $data)
     {
-
         // Insertar en BD
         $proveedorId = DB::table('proveedores')->insertGetId([
             'nombre' => trim($data['nombre']),
