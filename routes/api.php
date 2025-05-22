@@ -27,6 +27,7 @@ Route::post('/apartamentos/asignar-inquilino', [ApartamentosController::class, '
 //GASTOS
 Route::post('/gasto', [GastoController::class, 'createGastos']);
 
+
 // PROVEEDORES
 Route::prefix('proveedores')->group(function () {
     Route::get('/', [ProveedorController::class, 'index']); // GET /api/proveedores
@@ -37,7 +38,6 @@ Route::prefix('proveedores')->group(function () {
 
 
 // NOTIFICACIONES
-
 Route::prefix('notificaciones')->group(function () {
     Route::post('/', [NotificacionController::class, 'store']); // Crear
     Route::get('/{id}', [NotificacionController::class, 'show']); // Ver por ID

@@ -70,7 +70,6 @@ return new class extends Migration
             $table->date('fecha');
             $table->boolean('recurrente');
             $table->foreignId('id_proveedor')->nullable()->constrained('proveedores')->nullOnDelete();
-            $table->foreignId('user_id')->constrained('usuarios')->cascadeOnDelete(); // Añadido
             $table->timestamps();
         });
 
