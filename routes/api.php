@@ -34,6 +34,15 @@ Route::prefix('proveedores')->group(function () {
     Route::put('/{id}', [ProveedorController::class, 'update']); // PUT /api/proveedores/1
     Route::delete('/{id}', [ProveedorController::class, 'destroy']); // DELETE /api/proveedores/1
 });
+
+
 // NOTIFICACIONES
 
-Route::post('/notificaciones', [NotificacionController::class, 'store']);
+Route::prefix('notificaciones')->group(function () {
+    Route::post('/', [NotificacionController::class, 'store']); // Crear
+    Route::get('/{id}', [NotificacionController::class, 'show']); // Ver por ID
+    Route::get('/usuario/{id_usuario}', [NotificacionController::class, 'listarPorUsuario']); // Listar por usuario
+    Route::put('/{id}', [NotificacionController::class, 'update']); // Actualizar
+    Route::patch('/{id}/leida', [NotificacionController::class, 'marcarComoLeida']); // Marcar como leída
+    Route::delete('/{id}', [NotificacionController::class, 'destroy']); // Eliminar
+});
