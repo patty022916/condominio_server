@@ -67,7 +67,7 @@ return new class extends Migration
             $table->string('descripcion');
             $table->decimal('monto', 10, 2);
             $table->enum('tipo_gasto', ['fijo', 'comun', 'extraordinario']);// cambiado el ultimo tipo
-            $table->date('fecha');
+            $table->datetime('fecha');
             $table->boolean('recurrente');
             $table->foreignId('id_proveedor')->nullable()->constrained('proveedores')->nullOnDelete();
             $table->timestamps();

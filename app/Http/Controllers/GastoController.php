@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Gasto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class GastoController extends Controller
 {
@@ -20,6 +21,7 @@ class GastoController extends Controller
                 'fecha' => 'sometimes|date'
             ]);
 
+            $dataGasto['fecha'] = Carbon::parse($dataGasto['fecha'])->format('Y-m-d H:i:s');
             $gasto = Gasto::create($dataGasto);
             return response()->json($gasto, 200);
         } catch (\Exception $e) {
@@ -40,6 +42,8 @@ class GastoController extends Controller
                 'fecha' => 'sometimes|date'
             ]);
 
+
+            $dataGasto['fecha'] = Carbon::parse($dataGasto['fecha'])->format('Y-m-d H:i:s');
             $gasto->update($dataGasto);
             return response()->json($gasto, 200);
         } catch (\Exception $e) {

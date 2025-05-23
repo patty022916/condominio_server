@@ -30,7 +30,7 @@ class UsuarioController extends Controller
                 'apellido' => 'required|string|max:255',
                 'email' => 'required|string',
                 'password' => 'required',
-                'telefono' => 'nullable|string|max:15',
+                'telefono' => 'nullable|string|max:20',
                 'id_rol' => 'required|integer',
             ]);
 
