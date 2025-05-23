@@ -26,6 +26,9 @@ Route::post('/apartamentos/asignar-inquilino', [ApartamentosController::class, '
 
 //GASTOS
 Route::post('/gasto', [GastoController::class, 'createGastos']);
+Route::put('/gasto/{id}', [GastoController::class, 'actualizarGasto']);
+Route::get('/gasto', [GastoController::class, 'listarGatos']);
+Route::delete('gasto/{id}', [GastoController::class, 'eliminarGasto']);
 
 
 // PROVEEDORES

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Gasto extends Model
 {
@@ -15,14 +16,21 @@ class Gasto extends Model
         'fecha',
         'id_proveedor',
         'recurrente'
-       
+
     ];
 
-    // Relacion
-    public function proveedor()
+    /**
+     *Listado de gastos con el nombre del proveedor 
+     *
+     * @return array
+     * 
+     */
+    public static function listarGastos()
     {
-        return $this->belongsTo(Proveedor::class, 'id_proveedor');
+        return DB::table('gastos')
+            ->leftJoin('proveedores', 'proveedores.id', '=', 'gastos.id_proveedor')
+            ->select('gastos.*', 'proveedores.nombre as  proveedor')
+            ->orderBy('gastos.id', 'asc')
+            ->get();
     }
-
-   
 }
