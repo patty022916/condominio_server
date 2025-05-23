@@ -25,11 +25,14 @@ class Gasto extends Model
      * @return array
      * 
      */
-    public static function listarGastos()
+    public static function listarGastos($id_gasto = null)
     {
         return DB::table('gastos')
             ->leftJoin('proveedores', 'proveedores.id', '=', 'gastos.id_proveedor')
-            ->select('gastos.*', 'proveedores.nombre as  proveedor')
+            ->select('gastos.*', 'proveedores.nombre as proveedor')
+            ->when($id_gasto, function ($query, $id_gasto) {
+                return $query->where('gastos.id', $id_gasto);
+            })
             ->orderBy('gastos.id', 'asc')
             ->get();
     }

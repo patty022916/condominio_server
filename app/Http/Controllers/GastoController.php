@@ -23,7 +23,8 @@ class GastoController extends Controller
 
             $dataGasto['fecha'] = Carbon::parse($dataGasto['fecha'])->format('Y-m-d H:i:s');
             $gasto = Gasto::create($dataGasto);
-            return response()->json($gasto, 200);
+            $gasto = Gasto::listarGastos($dataGasto['id']);
+            return response()->json($gasto[0], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -45,7 +46,10 @@ class GastoController extends Controller
 
             $dataGasto['fecha'] = Carbon::parse($dataGasto['fecha'])->format('Y-m-d H:i:s');
             $gasto->update($dataGasto);
-            return response()->json($gasto, 200);
+
+            $gasto = Gasto::listarGastos($id);
+
+            return response()->json($gasto[0], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

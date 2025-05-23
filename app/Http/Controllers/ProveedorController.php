@@ -31,7 +31,7 @@ class ProveedorController extends Controller
             $validatedData = $request->validate([
                 'nombre' => 'required|string|max:255',
                 'servicio' => 'required|string|max:255',
-                'telefono' => 'required|string|max:20',
+                'telefono' => 'required|string|max:13|min:11',
 
             ]);
 
@@ -52,7 +52,7 @@ class ProveedorController extends Controller
             $validatedData = $request->validate([
                 'nombre' => 'required|string|max:255',
                 'servicio' => 'required|string|max:255',
-                'telefono' => 'required|string|max:20',
+                'telefono' => 'required|string|max:13|min:11',
             ]);
 
             $proveedor = Proveedor::findOrFail($id);
