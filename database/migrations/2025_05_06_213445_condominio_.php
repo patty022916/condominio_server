@@ -72,6 +72,15 @@ return new class extends Migration
             $table->foreignId('id_proveedor')->nullable()->constrained('proveedores')->nullOnDelete();
             $table->timestamps();
         });
+        
+           // Historial de Gasto
+        Schema::create('historial_gastos', function (Blueprint $table) {
+            $table->id(); // ID autoincremental
+            $table->foreignId('id_pago')->constrained('pagos')->onDelete('cascade'); // Relación con tabla pagos
+            $table->decimal('monto', 10, 2); // Monto del gasto con hasta 99999999.99
+            $table->string('url'); // Ruta o enlace al comprobante o documento
+            $table->timestamp('created_at')->useCurrent(); // Fecha y hora de creación
+        });
 
         // Tabla notificaciones
         Schema::create('notificaciones', function (Blueprint $table) {
@@ -113,6 +122,8 @@ return new class extends Migration
             $table->id();
             $table->enum('tipo_movimiento', ['ingreso', 'egreso']);
             $table->decimal('monto', 10, 2);
+            $table->decimal('fondo_activo_bs', 14, 2)->default(0); // Bolívares
+            $table->decimal('fondo_pasivo_usd', 10, 2)->default(0); // Dólares
             $table->string('descripcion');
             $table->date('fecha');
             $table->foreignId('id_gasto')->nullable()->constrained('gastos')->nullOnDelete();
