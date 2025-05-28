@@ -29,9 +29,13 @@ class Usuario extends Model
             usuarios.telefono,
             usuarios.id_rol,
             roles.nombre cargo,
-            roles.permisos
+            roles.permisos,
+            apartamento.piso,
+            apartamento.letra
         FROM usuarios
         INNER JOIN roles ON roles.id = usuarios.id_rol
+        LEFT JOIN apartamentos as apartamento on apartamento.inquilino_id = usuarios.id 
+        or apartamento.propietario_id = usuarios.id 
     ";
 
         $bindings = [];
