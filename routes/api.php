@@ -43,8 +43,7 @@ Route::prefix('proveedores')->group(function () {
 // NOTIFICACIONES
 Route::prefix('notificaciones')->group(function () {
     Route::post('/', [NotificacionController::class, 'store']); // Crear
-    Route::get('/{id}', [NotificacionController::class, 'show']); // Ver por ID
-    Route::get('/usuario/{id_usuario}', [NotificacionController::class, 'listarPorUsuario']); // Listar por usuario
+    Route::get('/', [NotificacionController::class, 'listarNotificaciones']);
     Route::put('/{id}', [NotificacionController::class, 'update']); // Actualizar
     Route::patch('/{id}/leida', [NotificacionController::class, 'marcarComoLeida']); // Marcar como leída
     Route::delete('/{id}', [NotificacionController::class, 'destroy']); // Eliminar

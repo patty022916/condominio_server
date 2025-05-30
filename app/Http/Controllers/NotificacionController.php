@@ -25,11 +25,7 @@ class NotificacionController extends Controller
 
             $notificacion = Notificacion::crearNotificacion($request->all());
 
-            return response()->json([
-                'success' => true,
-                'data' => $notificacion,
-                'message' => 'Notificación creada correctamente'
-            ], 201);
+            return response()->json($notificacion, 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -56,15 +52,12 @@ class NotificacionController extends Controller
     /**
      * Listar notificaciones por ID de usuario
      */
-    public function listarPorUsuario($id_usuario)
+    public function listarNotificaciones()
     {
         try {
-            $notificaciones = Notificacion::obtenerPorUsuario($id_usuario);
+            $notificaciones = Notificacion::listarNotificaciones();
 
-            return response()->json([
-                'success' => true,
-                'data' => $notificaciones
-            ]);
+            return response()->json($notificaciones, 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

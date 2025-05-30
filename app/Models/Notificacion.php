@@ -36,9 +36,17 @@ class Notificacion extends Model
     }
 
     // Obtener por usuario
-    public static function obtenerPorUsuario($id_usuario)
+    public static function listarNotificaciones()
     {
-        return DB::table('notificaciones')->where('id_usuario', $id_usuario)->orderBy('created_at', 'desc')->get();
+        return DB::table('notificaciones')
+            ->join('usuarios', 'usuarios.id', '=', 'notificaciones.id_usuario')
+            ->leftJoin('apartamentos as ap', function ($join) {
+                $join->on('ap.propietario_id', '=', 'usuarios.id')->orOn('ap.inquilino_id', '=', 'usuarios.id');
+            })->select(
+                'notificaciones.*',
+                'usuarios.nombre',
+                'ap.piso',
+                'ap.letra')->orderBy('ap.piso', 'asc')->get();
     }
 
     // Actualizar notificación
