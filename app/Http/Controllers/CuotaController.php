@@ -8,28 +8,28 @@ use App\Models\Gasto;
 use App\Models\Apartamentos;
 use App\Models\DeudaApartamento;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CuotaController extends Controller
 {
     /**
-     * Calcula la cuota por apartamento sin guardar aún
+     * Genera cálculo previo de la cuota con base en la fecha enviada
      */
     public function generarCuota(Request $request)
     {
         try {
-            $mes = $request->input('mes');
-            $anio = $request->input('anio');
+            $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01
+            $mes = $fecha->month;
+            $anio = $fecha->year;
 
-            // 1. Total de gastos del mes/año
             $total_gastos = Gasto::whereMonth('fecha', $mes)
                                  ->whereYear('fecha', $anio)
                                  ->sum('monto');
 
             if ($total_gastos == 0) {
-                return response()->json(['error' => 'No hay gastos para el mes y año indicado'], 400);
+                return response()->json(['error' => 'No hay gastos para la fecha indicada'], 400);
             }
 
-            // 2. Calculamos las cuotas por apartamento
             $apartamentos = Apartamentos::all();
             $cuotas = [];
 
@@ -44,8 +44,7 @@ class CuotaController extends Controller
             }
 
             return response()->json([
-                'mes' => $mes,
-                'anio' => $anio,
+                'fecha' => $fecha->toDateString(),
                 'total_gastos' => $total_gastos,
                 'cuotas' => $cuotas
             ]);
@@ -56,37 +55,36 @@ class CuotaController extends Controller
     }
 
     /**
-     * Guarda la cuota mensual y crea deudas por apartamento
+     * Guarda cuota y crea deudas asociadas por apartamento
      */
     public function guardarCuota(Request $request)
     {
         DB::beginTransaction();
 
         try {
-            $mes = $request->input('mes');
-            $anio = $request->input('anio');
+            $fecha = Carbon::parse($request->input('fecha'));
+            $periodo = $request->input('periodo');
 
-            // Verificamos si ya existe la cuota
-            if (Cuota::where('mes', $mes)->where('anio', $anio)->exists()) {
-                return response()->json(['error' => 'La cuota ya fue generada para ese mes y año'], 400);
+            // Verificamos si ya existe una cuota para la misma fecha
+            if (Cuota::whereDate('fecha', $fecha)->exists()) {
+                return response()->json(['error' => 'Ya existe una cuota para esa fecha'], 400);
             }
 
-            $total_gastos = Gasto::whereMonth('fecha', $mes)
-                                 ->whereYear('fecha', $anio)
+            $total_gastos = Gasto::whereMonth('fecha', $fecha->month)
+                                 ->whereYear('fecha', $fecha->year)
                                  ->sum('monto');
 
             if ($total_gastos == 0) {
-                return response()->json(['error' => 'No hay gastos registrados para ese mes/año'], 400);
+                return response()->json(['error' => 'No hay gastos registrados para esa fecha'], 400);
             }
 
-            // Guardamos cuota general
             $cuota = Cuota::create([
-                'mes' => $mes,
-                'anio' => $anio,
-                'total_gastos' => $total_gastos
+                'descripcion' => $request->input('descripcion') ?? 'Cuota generada automáticamente',
+                'monto' => $total_gastos,
+                'periodo' => $periodo,
+                'fecha' => $fecha->toDateString()
             ]);
 
-            // Creamos deudas por apartamento
             $apartamentos = Apartamentos::all();
 
             foreach ($apartamentos as $apto) {
@@ -96,14 +94,14 @@ class CuotaController extends Controller
                 DeudaApartamento::create([
                     'cuota_id' => $cuota->id,
                     'apartamento_id' => $apto->id,
-                    'monto_deuda' => $monto,
+                    'monto' => $monto,
                     'monto_pagado' => 0,
                     'estado' => 'pendiente'
                 ]);
             }
 
             DB::commit();
-            return response()->json(['message' => 'Cuota y deudas generadas correctamente'], 201);
+            return response()->json(['message' => 'Cuota y deudas creadas correctamente'], 201);
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -111,45 +109,43 @@ class CuotaController extends Controller
         }
     }
 
-//  muestra todas las cuotas registradas
+    /**
+     * Lista todas las cuotas con cantidad de deudas asociadas
+     */
+    public function listarCuotas()
+    {
+        try {
+            $cuotas = Cuota::withCount('deudas')->orderByDesc('fecha')->get();
+            return response()->json($cuotas);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
-public function listarCuotas()
-{
-    try {
-        $cuotas = Cuota::withCount('deudas')->orderByDesc('anio')->orderByDesc('mes')->get();
+    /**
+     * Muestra cuotas (deudas) por apartamento
+     */
+    public function cuotasPorApartamento($id)
+    {
+        try {
+            $deudas = DeudaApartamento::with('cuota')
+                ->where('apartamento_id', $id)
+                ->orderByDesc(DB::raw("cuota_id"))
+                ->get()
+                ->map(function ($deuda) {
+                    return [
+                        'fecha' => $deuda->cuota->fecha,
+                        'descripcion' => $deuda->cuota->descripcion,
+                        'monto_total' => $deuda->monto,
+                        'pagado' => $deuda->monto_pagado,
+                        'estado' => $deuda->estado,
+                    ];
+                });
 
-        return response()->json($cuotas);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($deudas);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
-//muestra cuotas asociadas a un apartamento (por su ID)
 
-
-public function cuotasPorApartamento($id)
-{
-    try {
-        $deudas = DeudaApartamento::with('cuota')
-                    ->where('apartamento_id', $id)
-                    ->orderByDesc(DB::raw("CONCAT(cuota_id, '', apartamento_id)"))
-                    ->get()
-                    ->map(function ($deuda) {
-                        return [
-                            'mes' => $deuda->cuota->mes,
-                            'anio' => $deuda->cuota->anio,
-                            'monto_total' => $deuda->monto_deuda,
-                            'pagado' => $deuda->monto_pagado,
-                            'estado' => $deuda->estado,
-                        ];
-                    });
-
-        return response()->json($deudas);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-}
-
-
-
-
-}

@@ -10,6 +10,7 @@ use App\Http\Controllers\GastoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\CuotaController;
+use App\Http\Controllers\DeudaApartamentoController;
 
 
 //USUARIOS
@@ -59,4 +60,7 @@ Route::post('/cuotas/generar', [CuotaController::class, 'generarCuota']); // Cal
 Route::post('/cuotas/guardar', [CuotaController::class, 'guardarCuota']); // Guarda cuota y deudas
 Route::get('/cuotas', [CuotaController::class, 'listarCuotas']); // Lista todas las cuotas
 Route::get('/cuotas/apartamento/{id}', [CuotaController::class, 'cuotasPorApartamento']); // Cuotas y deudas por apartamento
+ 
+// Deudas 
 
+Route::apiResource('deudas', DeudaApartamentoController::class);

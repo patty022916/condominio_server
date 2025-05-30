@@ -18,9 +18,15 @@ class DeudaApartamento extends Model
 
     public $timestamps = false;
 
-    public function cuota()
+public function apartamento()
 {
-    return $this->belongsTo(Cuota::class);
+    return $this->belongsTo(Apartamentos::class, 'apartamento_id');
 }
+
+public function cuota()
+{
+    return $this->belongsTo(Cuota::class, 'cuota_id');
+}
+
 
 }

@@ -3,9 +3,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+  
 class Cuota extends Model
 {
-    protected $fillable = ['mes', 'anio', 'total_gastos'];
+    protected $table = 'cuotas';
+
+    protected $fillable = [
+        'descripcion',
+        'monto',
+        'periodo',
+        'fecha'
+    ];
 
     public $timestamps = false;
 
@@ -14,3 +22,5 @@ class Cuota extends Model
         return $this->hasMany(DeudaApartamento::class);
     }
 }
+
+
