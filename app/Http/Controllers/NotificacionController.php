@@ -24,8 +24,9 @@ class NotificacionController extends Controller
             ]);
 
             $notificacion = Notificacion::crearNotificacion($request->all());
+            $notificacion = Notificacion::listarNotificaciones($notificacion->id);
 
-            return response()->json($notificacion, 200);
+            return response()->json($notificacion[0], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -72,34 +73,39 @@ class NotificacionController extends Controller
             $request->validate([
                 'titulo' => 'required|string|max:255',
                 'mensaje' => 'nullable|string',
-                'tipo' => 'required|in:cobro,reunion,alerta,general'
+                'tipo' => 'required|in:cobro,reunion,alerta,general',
+                'id_usuario' => 'required|exists:usuarios,id'
             ]);
 
             $notificacion = Notificacion::actualizarNotificacion($id, $request->all());
+            $notificacion = Notificacion::listarNotificaciones($notificacion->id);
 
-            return response()->json([
-                'success' => true,
-                'data' => $notificacion,
-                'message' => 'Notificación actualizada correctamente'
-            ]);
+            return response()->json($notificacion[0], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
+
     /**
-     * Marcar notificación como leída
+     * MARCA UN Arrreglo de notificaciones como leidas
+     *
+     * @param Request $request
+     * 
+     * @return [type]
+     * 
      */
-    public function marcarComoLeida($id)
+    public function marcarComoLeida(Request $request)
     {
         try {
-            $notificacion = Notificacion::marcarComoLeida($id);
+            $notificaciones = $request->json()->all();
 
-            return response()->json([
-                'success' => true,
-                'data' => $notificacion,
-                'message' => 'Notificación marcada como leída'
-            ]);
+            foreach ($notificaciones as $key => $value) {
+
+                $notificaciones[$key] = Notificacion::marcarComoLeida($value['id']);
+            }
+
+            return response()->json($notificaciones, 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -118,6 +124,17 @@ class NotificacionController extends Controller
             }
 
             return response()->json(['success' => true, 'message' => 'Notificación eliminada']);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function listNotificationForUser($id)
+    {
+        try {
+
+            $notificaciones = Notificacion::listarNotificaciones(null, $id);
+
+            return response()->json($notificaciones, 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

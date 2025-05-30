@@ -36,17 +36,29 @@ class Notificacion extends Model
     }
 
     // Obtener por usuario
-    public static function listarNotificaciones()
+    public static function listarNotificaciones($id_notificacion = null, $id_usuario = null)
     {
-        return DB::table('notificaciones')
+        $query = DB::table('notificaciones')
             ->join('usuarios', 'usuarios.id', '=', 'notificaciones.id_usuario')
             ->leftJoin('apartamentos as ap', function ($join) {
-                $join->on('ap.propietario_id', '=', 'usuarios.id')->orOn('ap.inquilino_id', '=', 'usuarios.id');
-            })->select(
+                $join->on('ap.propietario_id', '=', 'usuarios.id')
+                    ->orOn('ap.inquilino_id', '=', 'usuarios.id');
+            })
+            ->select(
                 'notificaciones.*',
                 'usuarios.nombre',
                 'ap.piso',
-                'ap.letra')->orderBy('ap.piso', 'asc')->get();
+                'ap.letra'
+            );
+
+        // Solo aplica un filtro si uno de los dos viene
+        if ($id_notificacion) {
+            $query->where('notificaciones.id', $id_notificacion);
+        } elseif ($id_usuario) {
+            $query->where('notificaciones.id_usuario', $id_usuario);
+        }
+
+        return $query->orderBy('notificaciones.created_at', 'desc')->get();
     }
 
     // Actualizar notificación
@@ -56,6 +68,7 @@ class Notificacion extends Model
             'titulo' => $data['titulo'],
             'mensaje' => $data['mensaje'] ?? null,
             'tipo' => $data['tipo'],
+            'id_usuario' => $data['id_usuario'],
             'updated_at' => now()
         ]);
         return DB::table('notificaciones')->where('id', $id)->first();
