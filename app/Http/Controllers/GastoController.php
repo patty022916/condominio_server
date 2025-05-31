@@ -20,10 +20,10 @@ class GastoController extends Controller
                 'recurrente' => 'sometimes|boolean',
                 'fecha' => 'sometimes|date'
             ]);
-
             $dataGasto['fecha'] = Carbon::parse($dataGasto['fecha'])->format('Y-m-d H:i:s');
             $gasto = Gasto::create($dataGasto);
-            $gasto = Gasto::listarGastos($dataGasto['id']);
+           
+            $gasto = Gasto::listarGastos($gasto['id']);
             return response()->json($gasto[0], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

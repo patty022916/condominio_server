@@ -33,7 +33,7 @@ class Gasto extends Model
             ->when($id_gasto, function ($query, $id_gasto) {
                 return $query->where('gastos.id', $id_gasto);
             })
-            ->orderBy('gastos.id', 'asc')
+            ->orderBy('gastos.id', 'desc')
             ->get();
     }
 }
