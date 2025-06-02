@@ -8,23 +8,52 @@ use App\Models\Gasto;
 use App\Models\Apartamentos;
 use App\Models\DeudaApartamento;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
+use PHPUnit\Framework\Constraint\Count;
 
 class CuotaController extends Controller
 {
+
+    public function obtenerTasaBcv()
+    {
+        try {
+            $response = Http::get('https://pydolarve.org/api/v2/tipo-cambio');
+
+            return $response['monitors']['usd'];
+        } catch (\Throwable $e) {
+            // Retorna arreglo por defecto
+            return [
+                "price" => 97.31,
+                "title" => "Dólar estadounidense",
+            ];
+        }
+    }
+
+
     /**
-     * Genera cálculo previo de la cuota con base en la fecha enviada
+     * Genera una cuota para todos los apartamentos en base a la fecha enviada
+     *
+     * @param Request $request
+     * 
+     * @return array
+     * 
      */
     public function generarCuota(Request $request)
     {
         try {
-            $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01
+
+            //* Obtenemos tass bcv
+            $tasas_bcv = CuotaController::obtenerTasaBcv();
+
+            $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01   
             $mes = $fecha->month;
             $anio = $fecha->year;
 
+            // *MONTO EN DOLARES
             $total_gastos = Gasto::whereMonth('fecha', $mes)
-                                 ->whereYear('fecha', $anio)
-                                 ->sum('monto');
+                ->whereYear('fecha', $anio)
+                ->sum('monto');
 
             if ($total_gastos == 0) {
                 return response()->json(['error' => 'No hay gastos para la fecha indicada'], 400);
@@ -39,16 +68,18 @@ class CuotaController extends Controller
                 $cuotas[] = [
                     'apartamento_id' => $apto->id,
                     'coef_alicuota' => $coef,
-                    'monto_calculado' => $monto,
+                    'monto_bs' => $monto * $tasas_bcv['price'],
+                    'monto_usd' => $monto
                 ];
             }
 
-            return response()->json([
+            $response = [
                 'fecha' => $fecha->toDateString(),
                 'total_gastos' => $total_gastos,
                 'cuotas' => $cuotas
-            ]);
+            ];
 
+            return response()->json($response, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -59,8 +90,6 @@ class CuotaController extends Controller
      */
     public function guardarCuota(Request $request)
     {
-        DB::beginTransaction();
-
         try {
             $fecha = Carbon::parse($request->input('fecha'));
             $periodo = $request->input('periodo');
@@ -71,8 +100,8 @@ class CuotaController extends Controller
             }
 
             $total_gastos = Gasto::whereMonth('fecha', $fecha->month)
-                                 ->whereYear('fecha', $fecha->year)
-                                 ->sum('monto');
+                ->whereYear('fecha', $fecha->year)
+                ->sum('monto');
 
             if ($total_gastos == 0) {
                 return response()->json(['error' => 'No hay gastos registrados para esa fecha'], 400);
@@ -99,10 +128,7 @@ class CuotaController extends Controller
                     'estado' => 'pendiente'
                 ]);
             }
-
-            DB::commit();
             return response()->json(['message' => 'Cuota y deudas creadas correctamente'], 201);
-
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -148,4 +174,3 @@ class CuotaController extends Controller
         }
     }
 }
-
