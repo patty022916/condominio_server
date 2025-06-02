@@ -10,7 +10,6 @@ use App\Models\DeudaApartamento;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
-use PHPUnit\Framework\Constraint\Count;
 
 class CuotaController extends Controller
 {
@@ -39,22 +38,32 @@ class CuotaController extends Controller
      * @return array
      * 
      */
-    public function generarCuota(Request $request)
+    public function generarCuotaApi(Request $request)
+    {
+        try {
+
+            $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01   
+            $response = CuotaController::generarCuotaPorApartamento($fecha);
+
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function generarCuotaPorApartamento($fecha_gastos)
     {
         try {
 
             //* Obtenemos tass bcv
             $tasas_bcv = CuotaController::obtenerTasaBcv();
 
-            $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01   
-
-
             //* Listado de gastos
-            $gastos = Gasto::whereMonth('fecha', $fecha->month)
-                ->whereYear('fecha', $fecha->year)->get();
+            $gastos = Gasto::whereMonth('fecha', $fecha_gastos->month)
+                ->whereYear('fecha', $fecha_gastos->year)->get();
 
             if (count($gastos) == 0) {
-                return response()->json(['error' => 'No hay gastos para la fecha indicada'], 400);
+                return ['error' => 'No hay gastos para la fecha indicada'];
             }
 
             //* Desglose de gastos
@@ -71,7 +80,7 @@ class CuotaController extends Controller
                 $key = 'gasto_' . $gasto->tipo_gasto;
 
                 if (in_array($key, $tipos)) {
-                    $desglose_gastos->$key += $gasto->monto;
+                    $desglose_gastos->$key +=   $gasto->monto;
                     $desglose_gastos->gasto_total += $gasto->monto;
                 }
             }
@@ -104,14 +113,14 @@ class CuotaController extends Controller
 
             //respuesta
             $response = array_merge(
-                ['fecha' => $fecha->toDateString()],
+                ['fecha' => $fecha_gastos->toDateString()],
                 get_object_vars($desglose_gastos),
                 ['cuotas' => $cuotas]
             );
 
-            return response()->json($response, 200);
+            return $response;
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return $e;
         }
     }
 
@@ -121,44 +130,20 @@ class CuotaController extends Controller
     public function guardarCuota(Request $request)
     {
         try {
-            $fecha = Carbon::parse($request->input('fecha'));
-            $periodo = $request->input('periodo');
+            $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01   
+            $cuotas = CuotaController::generarCuotaPorApartamento($fecha);
 
-            // Verificamos si ya existe una cuota para la misma fecha
-            if (Cuota::whereDate('fecha', $fecha)->exists()) {
-                return response()->json(['error' => 'Ya existe una cuota para esa fecha'], 400);
-            }
+            $data = [
+                'fecha' => $cuotas['fecha'],
+                'descripcion' => 'Cuota ' . $cuotas['fecha'],
+                'monto' => $cuotas['gasto_total']
+            ];
 
-            $total_gastos = Gasto::whereMonth('fecha', $fecha->month)
-                ->whereYear('fecha', $fecha->year)
-                ->sum('monto');
+            $cuota = Cuota::where('fecha',  $fecha)->first();
 
-            if ($total_gastos == 0) {
-                return response()->json(['error' => 'No hay gastos registrados para esa fecha'], 400);
-            }
 
-            $cuota = Cuota::create([
-                'descripcion' => $request->input('descripcion') ?? 'Cuota generada automáticamente',
-                'monto' => $total_gastos,
-                'periodo' => $periodo,
-                'fecha' => $fecha->toDateString()
-            ]);
 
-            $apartamentos = Apartamentos::all();
-
-            foreach ($apartamentos as $apto) {
-                $coef = ($apto->habitaciones == 2) ? 0.40415 : 0.5958;
-                $monto = round($total_gastos * $coef, 2);
-
-                DeudaApartamento::create([
-                    'cuota_id' => $cuota->id,
-                    'apartamento_id' => $apto->id,
-                    'monto' => $monto,
-                    'monto_pagado' => 0,
-                    'estado' => 'pendiente'
-                ]);
-            }
-            return response()->json(['message' => 'Cuota y deudas creadas correctamente'], 201);
+            return response()->json($cuota, 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
