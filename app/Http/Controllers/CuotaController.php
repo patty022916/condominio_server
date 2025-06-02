@@ -59,7 +59,7 @@ class CuotaController extends Controller
 
             //* Desglose de gastos
             $desglose_gastos = new \stdClass();
-            $tipos = ['gasto_fijo', 'gasto_comun', 'gasto_extraordinario'];
+            $tipos = ['gasto_fijo', 'gasto_comun', 'gasto_extraordinario', 'gasto_total'];
 
             //* Inicializar propiedades en 0
             foreach ($tipos as $tipo) {
@@ -72,31 +72,44 @@ class CuotaController extends Controller
 
                 if (in_array($key, $tipos)) {
                     $desglose_gastos->$key += $gasto->monto;
+                    $desglose_gastos->gasto_total += $gasto->monto;
                 }
             }
+
+            //* Redondear total de gastos
+            $desglose_gastos->gasto_total = round($desglose_gastos->gasto_total, 2);
+
 
             //* Sacar total de gastos
             $apartamentos = Apartamentos::all();
             $cuotas = [];
 
-            // foreach ($apartamentos as $apto) {
-            //     $coef = ($apto->habitaciones == 2) ? 0.40415 : 0.5958;
-            //     $monto = round((float)$total_gastos * (float)$coef, 2);
-            //     $cuotas[] = [
-            //         'apartamento_id' => $apto->id,
-            //         'coef_alicuota' => $coef,
-            //         'monto_bs' => $monto * $tasas_bcv['price'],
-            //         'monto_usd' => $monto
-            //     ];
-            // }
+            foreach ($apartamentos as $apto) {
 
-            // $response = [
-            //     'fecha' => $fecha->toDateString(),
-            //     'total_gastos' => $total_gastos,
-            //     'cuotas' => $cuotas
-            // ];
+                //* Cuota por apartamento segun las habitaciones
+                $coef = ($apto->habitaciones == 2) ? 0.40415 : 0.5958;
 
-            return response()->json($desglose_gastos, 200);
+                $cuota_fija_individual = round((float)$desglose_gastos->gasto_fijo * (float)$coef, 2);
+                $cuota_extraordinaria_individual =  round($desglose_gastos->gasto_extraordinario / count($apartamentos), 2);
+                $total_bs = ($cuota_fija_individual + $cuota_extraordinaria_individual) * $tasas_bcv['price'];
+
+                $cuotas[] = [
+                    'apartamento_id' => $apto->id,
+                    'coef_alicuota' => $coef,
+                    'cuota_fija_usd' => $cuota_fija_individual,
+                    'cuota_extraordinaria_usd' => $cuota_extraordinaria_individual,
+                    'total_bs' => round($total_bs, 2)
+                ];
+            }
+
+            //respuesta
+            $response = array_merge(
+                ['fecha' => $fecha->toDateString()],
+                get_object_vars($desglose_gastos),
+                ['cuotas' => $cuotas]
+            );
+
+            return response()->json($response, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
