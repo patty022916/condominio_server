@@ -189,27 +189,36 @@ class CuotaController extends Controller
         }
     }
 
+     
     /**
-     * Muestra cuotas (deudas) por apartamento
+     * muestra las cuotas por apartamento segun el usuario  
+     *
+     * @param mixed $id_usuario
+     * 
+     * @return [type]
+     * 
      */
-    public function cuotasPorApartamento($id)
+    public function cuotasPorApartamento($id_usuario)
     {
         try {
-            $deudas = DeudaApartamento::with('cuota')
-                ->where('apartamento_id', $id)
-                ->orderByDesc(DB::raw("cuota_id"))
-                ->get()
-                ->map(function ($deuda) {
-                    return [
-                        'fecha' => $deuda->cuota->fecha,
-                        'descripcion' => $deuda->cuota->descripcion,
-                        'monto_total' => $deuda->monto,
-                        'pagado' => $deuda->monto_pagado,
-                        'estado' => $deuda->estado,
-                    ];
+            $fecha = now();
+            $apartamentos_usuario = Apartamentos::getApartmentsForUser($id_usuario);
+            $cuotas = CuotaController::generarCuotaPorApartamento($fecha);
+
+
+            $cuotas_filtradas = [];
+
+            foreach ($apartamentos_usuario as $apartamento) {
+                $cuotas_por_apartamento = array_filter($cuotas['cuotas'], function ($cuota) use ($apartamento) {
+                    return $cuota['apartamento_id'] === $apartamento['id'];
                 });
 
-            return response()->json($deudas);
+                $cuotas_filtradas = array_merge($cuotas_filtradas, $cuotas_por_apartamento);
+            }
+
+            $cuotas['cuotas'] = $cuotas_filtradas;
+
+            return response()->json($cuotas, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

@@ -59,7 +59,7 @@ Route::prefix('notificaciones')->group(function () {
 Route::post('/cuotas/generar', [CuotaController::class, 'generarCuotaApi']); //Calcula la cuota  
 Route::post('/cuotas/guardar', [CuotaController::class, 'guardarCuota']); // Guarda cuota calculada
 Route::get('/cuotas', [CuotaController::class, 'listarCuotas']); // Lista todas las cuotas
-Route::get('/cuotaS/{id}', [CuotaController::class, 'cuotasPorApartamento']); // Cuotas y deudas por apartamento
+Route::get('/cuotas/{id_usuario}', [CuotaController::class, 'cuotasPorApartamento']); // Cuotas y deudas por apartamento
  
 // Deudas 
 

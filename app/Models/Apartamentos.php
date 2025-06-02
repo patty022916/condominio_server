@@ -52,4 +52,19 @@ class Apartamentos extends Model
             ->orderBy('apartamentos.piso', 'asc')
             ->get();
     }
+
+    /**
+     * Lista el numero de apartamentos que tiene un usuario 
+     *
+     * @param mixed $id_user
+     * 
+     * @return [type]
+     * 
+     */
+    public static function getApartmentsForUser($id_user)
+    {
+        return Apartamentos::where('propietario_id', $id_user)
+            ->orWhere('inquilino_id', $id_user)
+            ->get();
+    }
 }
