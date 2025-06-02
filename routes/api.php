@@ -9,6 +9,9 @@ use App\Http\Controllers\ApartamentosController;
 use App\Http\Controllers\GastoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\CuotaController;
+use App\Http\Controllers\DeudaApartamentoController;
+
 
 //USUARIOS
 Route::get('/users', [UsuarioController::class, 'getUsers']);
@@ -49,3 +52,15 @@ Route::prefix('notificaciones')->group(function () {
     Route::post('/marcar-leidas', [NotificacionController::class, 'marcarComoLeida']); // Marcar como leída
     Route::delete('/{id}', [NotificacionController::class, 'destroy']); // Eliminar
 });
+
+
+// Cuotas
+
+Route::post('/cuotas/generar', [CuotaController::class, 'generarCuotaApi']); //Calcula la cuota  
+Route::post('/cuotas/guardar', [CuotaController::class, 'guardarCuota']); // Guarda cuota calculada
+Route::get('/cuotas', [CuotaController::class, 'listarCuotas']); // Lista todas las cuotas
+Route::get('/cuotaS/{id}', [CuotaController::class, 'cuotasPorApartamento']); // Cuotas y deudas por apartamento
+ 
+// Deudas 
+
+Route::apiResource('deudas', DeudaApartamentoController::class);
