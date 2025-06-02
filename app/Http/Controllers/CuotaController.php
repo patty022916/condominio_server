@@ -14,6 +14,12 @@ use Carbon\Carbon;
 class CuotaController extends Controller
 {
 
+    /**
+     * api para obtener la tasa del bcv
+     *
+     * @return [type]
+     * 
+     */
     public function obtenerTasaBcv()
     {
         try {
@@ -31,7 +37,7 @@ class CuotaController extends Controller
 
 
     /**
-     * Genera una cuota para todos los apartamentos en base a la fecha enviada
+     *  llama al metodo generarCuotaPorApartamento para retornar la cuota en la api
      *
      * @param Request $request
      * 
@@ -51,6 +57,14 @@ class CuotaController extends Controller
         }
     }
 
+    /**
+     * Se encaraga de generar la cuota por apartamento en base a la fecha dada
+     *
+     * @param mixed $fecha_gastos
+     * 
+     * @return [type]
+     * 
+     */
     public function generarCuotaPorApartamento($fecha_gastos)
     {
         try {
@@ -124,8 +138,14 @@ class CuotaController extends Controller
         }
     }
 
+
     /**
-     * Guarda cuota y crea deudas asociadas por apartamento
+     *Guarda una cuota en base a una fecha dada
+     *
+     * @param Request $request
+     * 
+     * @return [type]
+     * 
      */
     public function guardarCuota(Request $request)
     {
@@ -136,14 +156,20 @@ class CuotaController extends Controller
             $data = [
                 'fecha' => $cuotas['fecha'],
                 'descripcion' => 'Cuota ' . $cuotas['fecha'],
-                'monto' => $cuotas['gasto_total']
+                'periodo' => 1,
+                'monto' => $cuotas['gasto_total'],
+                'created_at' => now(),
+                'updated_at' => now()
             ];
 
             $cuota = Cuota::where('fecha',  $fecha)->first();
 
+            if (count((array) $cuota)  > 0) throw new \Exception('Ya existe una cuota para la fecha indicada');
+
+            $data  = Cuota::create($data);
 
 
-            return response()->json($cuota, 200);
+            return response()->json($data, 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -156,7 +182,7 @@ class CuotaController extends Controller
     public function listarCuotas()
     {
         try {
-            $cuotas = Cuota::withCount('deudas')->orderByDesc('fecha')->get();
+            $cuotas = Cuota::all();
             return response()->json($cuotas);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

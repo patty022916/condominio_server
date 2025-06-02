@@ -12,7 +12,9 @@ class Cuota extends Model
         'descripcion',
         'monto',
         'periodo',
-        'fecha'
+        'fecha',
+        'created_at',
+        'updated_at'
     ];
 
     public $timestamps = false;
