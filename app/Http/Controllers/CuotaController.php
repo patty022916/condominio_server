@@ -64,7 +64,7 @@ class CuotaController extends Controller
 
             foreach ($apartamentos as $apto) {
                 $coef = ($apto->habitaciones == 2) ? 0.40415 : 0.5958;
-                $monto = round($total_gastos * $coef, 2);
+                $monto = round((float)$total_gastos * (float)$coef, 2);
                 $cuotas[] = [
                     'apartamento_id' => $apto->id,
                     'coef_alicuota' => $coef,
