@@ -47,39 +47,56 @@ class CuotaController extends Controller
             $tasas_bcv = CuotaController::obtenerTasaBcv();
 
             $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01   
-            $mes = $fecha->month;
-            $anio = $fecha->year;
 
-            // *MONTO EN DOLARES
-            $total_gastos = Gasto::whereMonth('fecha', $mes)
-                ->whereYear('fecha', $anio)
-                ->sum('monto');
 
-            if ($total_gastos == 0) {
+            //* Listado de gastos
+            $gastos = Gasto::whereMonth('fecha', $fecha->month)
+                ->whereYear('fecha', $fecha->year)->get();
+
+            if (count($gastos) == 0) {
                 return response()->json(['error' => 'No hay gastos para la fecha indicada'], 400);
             }
 
+            //* Desglose de gastos
+            $desglose_gastos = new \stdClass();
+            $tipos = ['gasto_fijo', 'gasto_comun', 'gasto_extraordinario'];
+
+            //* Inicializar propiedades en 0
+            foreach ($tipos as $tipo) {
+                $desglose_gastos->$tipo = 0;
+            }
+
+            // Sumar montos según tipo_gasto
+            foreach ($gastos as $gasto) {
+                $key = 'gasto_' . $gasto->tipo_gasto;
+
+                if (in_array($key, $tipos)) {
+                    $desglose_gastos->$key += $gasto->monto;
+                }
+            }
+
+            //* Sacar total de gastos
             $apartamentos = Apartamentos::all();
             $cuotas = [];
 
-            foreach ($apartamentos as $apto) {
-                $coef = ($apto->habitaciones == 2) ? 0.40415 : 0.5958;
-                $monto = round((float)$total_gastos * (float)$coef, 2);
-                $cuotas[] = [
-                    'apartamento_id' => $apto->id,
-                    'coef_alicuota' => $coef,
-                    'monto_bs' => $monto * $tasas_bcv['price'],
-                    'monto_usd' => $monto
-                ];
-            }
+            // foreach ($apartamentos as $apto) {
+            //     $coef = ($apto->habitaciones == 2) ? 0.40415 : 0.5958;
+            //     $monto = round((float)$total_gastos * (float)$coef, 2);
+            //     $cuotas[] = [
+            //         'apartamento_id' => $apto->id,
+            //         'coef_alicuota' => $coef,
+            //         'monto_bs' => $monto * $tasas_bcv['price'],
+            //         'monto_usd' => $monto
+            //     ];
+            // }
 
-            $response = [
-                'fecha' => $fecha->toDateString(),
-                'total_gastos' => $total_gastos,
-                'cuotas' => $cuotas
-            ];
+            // $response = [
+            //     'fecha' => $fecha->toDateString(),
+            //     'total_gastos' => $total_gastos,
+            //     'cuotas' => $cuotas
+            // ];
 
-            return response()->json($response, 200);
+            return response()->json($desglose_gastos, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
