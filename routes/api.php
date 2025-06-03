@@ -60,6 +60,7 @@ Route::post('/cuotas/generar', [CuotaController::class, 'generarCuotaApi']); //C
 Route::post('/cuotas/guardar', [CuotaController::class, 'guardarCuota']); // Guarda cuota calculada
 Route::get('/cuotas', [CuotaController::class, 'listarCuotas']); // Lista todas las cuotas
 Route::get('/cuotas/{id_usuario}', [CuotaController::class, 'cuotasPorApartamento']); // Cuotas y deudas por apartamento
+Route::delete('/cuotas/{id}', [CuotaController::class, 'eliminarCuota']);
  
 // Deudas 
 

@@ -162,7 +162,9 @@ class CuotaController extends Controller
                 'updated_at' => now()
             ];
 
-            $cuota = Cuota::where('fecha',  $fecha)->first();
+            $cuota = Cuota::whereMonth('fecha', $fecha->month)
+                          ->whereYear('fecha', $fecha->year)
+                          ->first();
 
             if (count((array) $cuota)  > 0) throw new \Exception('Ya existe una cuota para la fecha indicada');
 
@@ -189,7 +191,7 @@ class CuotaController extends Controller
         }
     }
 
-     
+
     /**
      * muestra las cuotas por apartamento segun el usuario  
      *
@@ -219,6 +221,27 @@ class CuotaController extends Controller
             $cuotas['cuotas'] = $cuotas_filtradas;
 
             return response()->json($cuotas, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * Elimina una cuota por su id
+     *
+     * @param mixed $id_cuota
+     * 
+     * @return [type]
+     * 
+     */
+    public function eliminarCuota($id_cuota)
+    {
+        try {
+            $cuota = Cuota::findOrFail($id_cuota);
+            $cuota->delete();
+
+            return response()->json(['mensaje' => 'Cuota eliminada correctamente'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
