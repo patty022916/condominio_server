@@ -11,7 +11,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\CuotaController;
 use App\Http\Controllers\DeudaApartamentoController;
-
+use App\Http\Controllers\Api\PagoController;
 
 //USUARIOS
 Route::get('/users', [UsuarioController::class, 'getUsers']);
@@ -64,3 +64,12 @@ Route::get('/cuotas/{id_usuario}', [CuotaController::class, 'cuotasPorApartament
 // Deudas 
 
 Route::apiResource('deudas', DeudaApartamentoController::class);
+
+// Pagos
+
+
+Route::get('/pagos', [PagoController::class, 'index']);
+Route::post('/pagos', [PagoController::class, 'store']);
+Route::get('/pagos/apartamento/{id}', [PagoController::class, 'pagosPorApartamento']);
+Route::put('/pagos/{id}/validar', [PagoController::class, 'validarPago']);
+Route::put('/pagos/{id}/rechazar', [PagoController::class, 'rechazarPago']);
