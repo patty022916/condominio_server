@@ -17,11 +17,11 @@ class RoleSeeder extends Seeder
             [
                 "nombre" => "Administrador",
                 "permisos" => json_encode([
-                    ["id" => 1, "key" => "estadísticas", "name" => "Análisis", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 1, "key" => "statistics", "name" => "Análisis", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 2, "key" => "administration", "name" => "Administración", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 3, "key" => "general_finances", "name" => "Finanzas Generales", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 4, "key" => "personal_finance", "name" => "Finanzas Personales", "view" => false, "create" => false, "update" => false, "delete" => false],
-                    ["id" => 5, "key" => "comunidad", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 5, "key" => "community", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
                 ]),
                 'created_at' => now(),   // necesarios si usas DB::table
                 'updated_at' => now()
@@ -30,11 +30,11 @@ class RoleSeeder extends Seeder
             [
                 "nombre" => "Propietario",
                 "permisos" => json_encode([
-                    ["id" => 1, "key" => "estadísticas", "name" => "Análisis", "view" => false, "create" => false, "update" => false, "delete" => false],
+                    ["id" => 1, "key" => "statistics", "name" => "Análisis", "view" => false, "create" => false, "update" => false, "delete" => false],
                     ["id" => 2, "key" => "administration", "name" => "Administración", "view" => false, "create" => false, "update" => false, "delete" => false],
                     ["id" => 3, "key" => "general_finances", "name" => "Finanzas Generales", "view" => false, "create" => false, "update" => false, "delete" => false],
                     ["id" => 4, "key" => "personal_finance", "name" => "Finanzas Personales", "view" => true, "create" => true, "update" => true, "delete" => true],
-                    ["id" => 5, "key" => "comunidad", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 5, "key" => "community", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
                 ]),
                 'created_at' => now(),   // necesarios si usas DB::table
                 'updated_at' => now()
@@ -42,11 +42,11 @@ class RoleSeeder extends Seeder
             [
                 "nombre" => "Inquilino",
                 "permisos" => json_encode([
-                    ["id" => 1, "key" => "estadísticas", "name" => "Análisis", "view" => false, "create" => false, "update" => false, "delete" => false],
+                    ["id" => 1, "key" => "statistics", "name" => "Análisis", "view" => false, "create" => false, "update" => false, "delete" => false],
                     ["id" => 2, "key" => "administration", "name" => "Administración", "view" => false, "create" => false, "update" => false, "delete" => false],
                     ["id" => 3, "key" => "general_finances", "name" => "Finanzas Generales", "view" => false, "create" => false, "update" => false, "delete" => false],
                     ["id" => 4, "key" => "personal_finance", "name" => "Finanzas Personales", "view" => true, "create" => true, "update" => true, "delete" => true],
-                    ["id" => 5, "key" => "comunidad", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 5, "key" => "community", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
                 ]),
                 'created_at' => now(),   // necesarios si usas DB::table
                 'updated_at' => now()
@@ -54,11 +54,11 @@ class RoleSeeder extends Seeder
             [
                 "nombre" => "Tesorero",
                 "permisos" => json_encode([
-                    ["id" => 1, "key" => "estadísticas", "name" => "Análisis", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 1, "key" => "statistics", "name" => "Análisis", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 2, "key" => "administration", "name" => "Administración", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 3, "key" => "general_finances", "name" => "Finanzas Generales", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 4, "key" => "personal_finance", "name" => "Finanzas Personales", "view" => false, "create" => false, "update" => false, "delete" => false],
-                    ["id" => 5, "key" => "comunidad", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 5, "key" => "community", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
                 ]),
                 'created_at' => now(),   // necesarios si usas DB::table
                 'updated_at' => now()
@@ -66,11 +66,11 @@ class RoleSeeder extends Seeder
             [
                 "nombre" => "Presidente",
                 "permisos" => json_encode([
-                    ["id" => 1, "key" => "estadísticas", "name" => "Análisis", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 1, "key" => "statistics", "name" => "Análisis", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 2, "key" => "administration", "name" => "Administración", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 3, "key" => "general_finances", "name" => "Finanzas Generales", "view" => true, "create" => true, "update" => true, "delete" => true],
                     ["id" => 4, "key" => "personal_finance", "name" => "Finanzas Personales", "view" => false, "create" => false, "update" => false, "delete" => false],
-                    ["id" => 5, "key" => "comunidad", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
+                    ["id" => 5, "key" => "community", "name" => "Comunidad", "view" => true, "create" => true, "update" => true, "delete" => true],
                 ]),
                 'created_at' => now(),   // necesarios si usas DB::table
                 'updated_at' => now()

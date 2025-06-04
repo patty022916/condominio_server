@@ -51,6 +51,11 @@ class CuotaController extends Controller
             $fecha = Carbon::parse($request->input('fecha')); // ej: 2025-05-01   
             $response = CuotaController::generarCuotaPorApartamento($fecha);
 
+            if (isset($response['error'])) {
+                throw new \Exception($response['error'], 422);
+            }
+
+
             return response()->json($response, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
