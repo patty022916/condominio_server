@@ -74,7 +74,7 @@ return new class extends Migration
         });
         
            // Historial de Gasto
-        Schema::create('historial_gastos', function (Blueprint $table) {
+        Schema::create('pagos_gastos', function (Blueprint $table) {
             $table->id(); // ID autoincremental
             $table->foreignId('id_gasto')->constrained('gastos')->onDelete('cascade'); // Relación con tabla gastos
             $table->decimal('monto', 10, 2); // Monto del gasto con hasta 99999999.99
@@ -135,7 +135,7 @@ return new class extends Migration
     {
         // Eliminar las tablas en orden inverso para evitar problemas de claves foráneas
         Schema::dropIfExists('fondos_condominio');
-        Schema::dropIfExists('historial_gastos');
+        Schema::dropIfExists('pagos_gastos');
         Schema::dropIfExists('pagos');
         Schema::dropIfExists('deudas_apartamentos');
         Schema::dropIfExists('notificaciones');

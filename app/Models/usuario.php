@@ -31,7 +31,8 @@ class Usuario extends Model
             roles.nombre cargo,
             roles.permisos,
             apartamento.piso,
-            apartamento.letra
+            apartamento.letra,
+            apartamento.id id_apartamento
         FROM usuarios
         INNER JOIN roles ON roles.id = usuarios.id_rol
         LEFT JOIN apartamentos as apartamento on apartamento.inquilino_id = usuarios.id 
@@ -63,7 +64,6 @@ class Usuario extends Model
 
         //si el arreglo esta vacio entonces el usuario no existe credenciales incorrectas
         if (count($user) == 0) {
-            return response()->json(['error' => 'Email o clave incorrecta'], 401);
             throw new \Exception('Email o clave incorrecta', 400);
         }
 
