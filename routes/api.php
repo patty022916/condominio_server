@@ -11,7 +11,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\CuotaController;
 use App\Http\Controllers\DeudaApartamentoController;
-use App\Http\Controllers\Api\PagoController;
+use App\Http\Controllers\PagoController;
 
 //USUARIOS
 Route::get('/users', [UsuarioController::class, 'getUsers']);
@@ -67,9 +67,10 @@ Route::apiResource('deudas', DeudaApartamentoController::class);
 
 // Pagos
 
-
-Route::get('/pagos', [PagoController::class, 'index']);
-Route::post('/pagos', [PagoController::class, 'store']);
-Route::get('/pagos/apartamento/{id}', [PagoController::class, 'pagosPorApartamento']);
-Route::put('/pagos/{id}/validar', [PagoController::class, 'validarPago']);
-Route::put('/pagos/{id}/rechazar', [PagoController::class, 'rechazarPago']);
+Route::prefix('pagos')->group(function () {
+    Route::get('/', [PagoController::class, 'index']);
+    Route::get('/apartamento/{id}', [PagoController::class, 'pagosPorApartamento']);
+    Route::post('/', [PagoController::class, 'store']);
+    Route::put('/{id}/validar', [PagoController::class, 'validarPago']);
+    Route::put('/{id}/rechazar', [PagoController::class, 'rechazarPago']);
+});

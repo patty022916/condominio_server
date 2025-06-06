@@ -2,22 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pago extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'apartamento_id',
-        'monto_bs',
-        'estado',
-        'descripcion',
+        'id_apartamento', 'id_usuario', 'monto', 'fecha_pago', 'url', 'estatus', 'forma_pago', 'id_cuota'
     ];
 
-    public function apartamento()
-    {
-        return $this->belongsTo(Apartamento::class);
+    public function usuario() {
+        return $this->belongsTo(Usuario::class, 'id_usuario');
+    }
+
+    public function apartamento() {
+        return $this->belongsTo(Apartamento::class, 'id_apartamento');
+    }
+
+    public function cuota() {
+        return $this->belongsTo(Cuota::class, 'id_cuota');
     }
 }

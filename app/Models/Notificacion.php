@@ -84,3 +84,30 @@ class Notificacion extends Model
         return DB::table('notificaciones')->where('id', $id)->first();
     }
 }
+
+    class PagoValidadoNotification extends  Model
+    {
+        use Queueable;
+    
+        protected $pago;
+    
+        public function __construct(Pago $pago)
+        {
+            $this->pago = $pago;
+        }
+    
+        public function via($notifiable)
+        {
+            return ['mail'];
+        }
+    
+        public function toMail($notifiable)
+        {
+            return (new MailMessage)
+                ->subject('Confirmación de Pago Validado')
+                ->line('Su pago de ' . $this->pago->monto_bs . ' Bs ha sido validado exitosamente.')
+                ->line('Gracias por mantenerse al día con sus obligaciones.')
+                ->line('Fecha del pago: ' . $this->pago->created_at->format('d/m/Y'));
+        }
+    }
+

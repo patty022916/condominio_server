@@ -3,135 +3,96 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pago;
-use App\Models\FondoCondominio;
-use App\Models\Apartamento;
-use App\Models\User;
+use App\Models\FondosCondominio;
+use App\Models\Notificacion;
 use Illuminate\Http\Request;
-use App\Notifications\PagoValidadoNotification;
-use App\Notifications\PagoRechazadoNotification;
 
 class PagoController extends Controller
 {
-    // 1. Crear pago
-    public function store(Request $request)
-    {
+    // Listar todos los pagos
+    public function index() {
+        return response()->json(Pago::with('usuario', 'apartamento', 'cuota')->get());
+    }
+
+    // Listar pagos por apartamento
+    public function pagosPorApartamento($id) {
+        return response()->json(Pago::where('id_apartamento', $id)->get());
+    }
+
+    // Crear un nuevo pago (validación previa)
+    public function store(Request $request) {
         $request->validate([
-            'apartamento_id' => 'required|exists:apartamentos,id',
-            'monto_bs' => 'required|numeric|min:0',
-            'descripcion' => 'nullable|string',
+            'id_apartamento' => 'required|exists:apartamentos,id',
+            'id_usuario' => 'required|exists:usuarios,id',
+            'monto' => 'required|numeric|min:0',
+            'fecha_pago' => 'required|date',
+            'forma_pago' => 'required|in:parcial,completo',
+            'id_cuota' => 'nullable|exists:cuotas,id',
         ]);
 
-        $pago = Pago::create([
-            'apartamento_id' => $request->apartamento_id,
-            'monto_bs' => $request->monto_bs,
-            'descripcion' => $request->descripcion,
-            'estado' => 'pendiente',
+        // Aquí podrías validar la deuda del apartamento
+        $deuda = \App\Models\DeudasApartamento::where('id_apartamento', $request->id_apartamento)
+                    ->where('id_usuario', $request->id_usuario)
+                    ->sum('monto_deuda');
+
+        if ($request->monto > $deuda) {
+            return response()->json(['error' => 'El monto excede la deuda del apartamento.'], 400);
+        }
+
+        $pago = Pago::create($request->all());
+        return response()->json(['mensaje' => 'Pago registrado correctamente', 'data' => $pago], 201);
+    }
+
+    // Validar y aprobar el pago
+    public function validarPago($id) {
+        $pago = Pago::findOrFail($id);
+
+        if ($pago->estatus === 'pagado') {
+            return response()->json(['mensaje' => 'El pago ya está validado.'], 400);
+        }
+
+        $pago->estatus = 'pagado';
+        $pago->save();
+
+        // Registrar en fondos del condominio
+        FondosCondominio::create([
+            'tipo_movimiento' => 'ingreso',
+            'monto' => $pago->monto,
+            'fondo_activo_bs' => $pago->monto, // Se asume que se suma
+            'fondo_pasivo_usd' => 0,
+            'descripcion' => 'Ingreso por validación de pago',
+            'fecha' => now(),
         ]);
-
-        return response()->json(['mensaje' => 'Pago registrado correctamente', 'pago' => $pago], 201);
-    }
-
-    // 2. Listar todos los pagos
-    public function index()
-    {
-        $pagos = Pago::with('apartamento')->get();
-        return response()->json($pagos);
-    }
-
-    // 3. Listar pagos por apartamento
-    public function pagosPorApartamento($id)
-    {
-        $pagos = Pago::where('apartamento_id', $id)->get();
-        return response()->json($pagos);
-    }
-
-    // 4. Validar pago (cambiar estado a pagado + actualizar fondo + notificar)
-    public function validarPago($id)
-    {
-        $pago = Pago::findOrFail($id);
-
-        if ($pago->estado !== 'pendiente') {
-            return response()->json(['error' => 'El pago ya ha sido procesado.'], 400);
-        }
-
-        // Actualizar estado
-        $pago->estado = 'pagado';
-        $pago->save();
-
-        // Actualizar fondo activo
-        $fondo = FondoCondominio::first(); // Asegúrate que esta tabla tenga un solo registro
-        $fondo->fondo_activo_bs += $pago->monto_bs;
-        $fondo->save();
-
-        // Notificar al propietario del apartamento
-        $apartamento = $pago->apartamento;
-        $user = $apartamento->usuario; // Asegúrate que la relación esté definida en el modelo Apartamento
-        if ($user) {
-            $user->notify(new PagoValidadoNotification($pago));
-        }
-
-        return response()->json(['mensaje' => 'Pago validado correctamente', 'nuevo_fondo_activo' => $fondo->fondo_activo_bs]);
-    }
-
-    // 5. Rechazar pago
-    public function rechazarPago($id)
-    {
-        $pago = Pago::findOrFail($id);
-
-        if ($pago->estado !== 'pendiente') {
-            return response()->json(['error' => 'El pago ya ha sido procesado.'], 400);
-        }
-
-        $pago->estado = 'rechazado';
-        $pago->save();
 
         // Notificar al usuario
-        $apartamento = $pago->apartamento;
-        $user = $apartamento->usuario;
-        if ($user) {
-            $user->notify(new PagoRechazadoNotification($pago));
+        Notificacion::create([
+            'titulo' => 'Pago Validado',
+            'mensaje' => 'Tu pago ha sido validado correctamente.',
+            'tipo' => 'cobro',
+            'id_usuario' => $pago->id_usuario,
+        ]);
+
+        return response()->json(['mensaje' => 'Pago validado y fondos actualizados.']);
+    }
+
+    // Rechazar un pago
+    public function rechazarPago($id) {
+        $pago = Pago::findOrFail($id);
+
+        if ($pago->estatus === 'pagado') {
+            return response()->json(['mensaje' => 'No se puede rechazar un pago ya validado.'], 400);
         }
 
-        return response()->json(['mensaje' => 'Pago rechazado y usuario notificado.']);
+        $pago->estatus = 'pendiente'; // Opcional: podrías usar otro estado como 'rechazado'
+        $pago->save();
+
+        Notificacion::create([
+            'titulo' => 'Pago Rechazado',
+            'mensaje' => 'Tu pago fue rechazado. Verifica el comprobante y vuelve a intentarlo.',
+            'tipo' => 'cobro',
+            'id_usuario' => $pago->id_usuario,
+        ]);
+
+        return response()->json(['mensaje' => 'Pago rechazado y notificación enviada.']);
     }
-// 6. Filtrar pagos por fecha (rango opcional)
-public function filtrarPorFecha(Request $request)
-{
-    $request->validate([
-        'desde' => 'nullable|date',
-        'hasta' => 'nullable|date|after_or_equal:desde',
-    ]);
-
-    $query = Pago::query();
-
-    if ($request->filled('desde')) {
-        $query->whereDate('created_at', '>=', $request->desde);
-    }
-
-    if ($request->filled('hasta')) {
-        $query->whereDate('created_at', '<=', $request->hasta);
-    }
-
-    $pagos = $query->with('apartamento')->get();
-
-    return response()->json($pagos);
 }
-
-// 7. Filtrar pagos por estado
-public function filtrarPorEstado($estado)
-{
-    $estado = strtolower($estado);
-
-    if (!in_array($estado, ['pendiente', 'pagado', 'rechazado'])) {
-        return response()->json(['error' => 'Estado no válido.'], 400);
-    }
-
-    $pagos = Pago::where('estado', $estado)->with('apartamento')->get();
-
-    return response()->json($pagos);
-}
-
-
-}
-
-
