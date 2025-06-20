@@ -11,6 +11,8 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\CuotaController;
 use App\Http\Controllers\DeudaApartamentoController;
+use App\Http\Controllers\ReporteController;
+
 
 
 //USUARIOS
@@ -55,13 +57,16 @@ Route::prefix('notificaciones')->group(function () {
 
 
 // Cuotas
-
 Route::post('/cuotas/generar', [CuotaController::class, 'generarCuotaApi']); //Calcula la cuota  
 Route::post('/cuotas/guardar', [CuotaController::class, 'guardarCuota']); // Guarda cuota calculada
 Route::get('/cuotas', [CuotaController::class, 'listarCuotas']); // Lista todas las cuotas
 Route::get('/cuotas/{id_usuario}', [CuotaController::class, 'cuotasPorApartamento']); // Cuotas y deudas por apartamento
 Route::delete('/cuotas/{id}', [CuotaController::class, 'eliminarCuota']);
- 
-// Deudas 
 
+// Deudas 
 Route::apiResource('deudas', DeudaApartamentoController::class);
+
+//reportes
+Route::get('/reporte/apartamentos', [ReporteController::class, 'apartamentos']);
+Route::get('/reporte/nomina', [ReporteController::class, 'nominaProveedores']);
+Route::post('/reporte/gastos', [ReporteController::class, 'GastosGenerales']);
