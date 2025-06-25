@@ -23,7 +23,7 @@ class Apartamentos extends Model
     {
 
         //Buscamos el apartamento para verificar que el inquilino no sea el propietario
-        $apartamento = Apartamentos::findOrFail($id_inquilino);
+        $apartamento = Apartamentos::findOrFail($id_apartamento);
 
         //lanzamos la excepción
         if ($apartamento->propietario_id == $id_inquilino) {
@@ -34,7 +34,7 @@ class Apartamentos extends Model
         $apartamentos->inquilino_id = $id_inquilino;
         $apartamentos->save();
 
-        return $apartamentos;
+        return Apartamentos::getApartamentos($id_apartamento)[0];
     }
 
     /**
@@ -43,14 +43,19 @@ class Apartamentos extends Model
      * @return array
      * 
      */
-    public static function getApartamentos()
+    public static function getApartamentos($apartamento_id = null)
     {
-        return DB::table('apartamentos')
+        $query = DB::table('apartamentos')
             ->join('usuarios as propietarios', 'propietarios.id', '=', 'apartamentos.propietario_id')
             ->leftJoin('usuarios as inquilinos', 'inquilinos.id', '=', 'apartamentos.inquilino_id')
             ->select('apartamentos.*', 'propietarios.nombre as propietario', 'inquilinos.nombre as inquilino')
-            ->orderBy('apartamentos.piso', 'asc')
-            ->get();
+            ->orderBy('apartamentos.piso', 'asc');
+
+        if ($apartamento_id !== null) {
+            $query->where('apartamentos.id', $apartamento_id);
+        }
+
+        return $query->get();
     }
 
     /**
