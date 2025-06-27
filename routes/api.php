@@ -39,6 +39,7 @@ Route::delete('gasto/{id}', [GastoController::class, 'eliminarGasto']);
 //PAGOS DE USUARIOS
 Route::post('/pago-usuario', [PagoController::class, 'SaleOfUser']);
 Route::get('/pago-usuario/{id_usuario?}', [PagoController::class, 'listarPagosUsuarios']);
+Route::put('/pago-usuario/validar', [PagoController::class, 'validatePaymentProcess']);
 
 
 // PROVEEDORES

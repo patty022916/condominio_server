@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use  App\Models\Notificacion;
 
 class Pago extends Model
 {
@@ -17,7 +18,7 @@ class Pago extends Model
         return $pago_usuario;
     }
 
-    public static function listarPagosUsuarios($id_usuario = null)
+    public static function listarPagosUsuarios($id_usuario = null, $id_pago = null)
     {
         $query = DB::table('pagos')
             ->select(
@@ -33,6 +34,38 @@ class Pago extends Model
             $query->where('pagos.id_usuario', $id_usuario);
         }
 
-        return $query->where('pagos.status', 'pendiente')->orderBy('pagos.created_at', 'desc')->get();
+        if ($id_pago != null) {
+            $query->where('pagos.id', $id_pago);
+        }
+
+        return $query->orderByRaw('pagos.status = "pendiente" DESC, pagos.created_at DESC')->get();
+    }
+
+
+    /**
+     * Método para validar el pago de los usuarios, 
+     * este es un método dinámico el cual setea rechazado o pagado según su status
+     * Envía la notificación al usuario que realizo el pago
+     *
+     * @param mixed $id_pago
+     * @param mixed $status
+     * 
+     * @return Pago
+     * 
+     */
+    public static function validatePaymentProcess($id_pago, $status)
+    {
+        DB::table('pagos')->where('id', $id_pago)->update(['status' => $status]);
+        $pago = Pago::listarPagosUsuarios(null, $id_pago)->first();
+
+        //enviamos notificacion
+        Notificacion::crearNotificacion([
+            'id_usuario' => $pago->id_usuario,
+            'titulo' => 'Pago  ' . $status,
+            'mensaje' => 'El pago de  ' . $pago->apartamento . ' por  ' . $pago->monto . '  bs  ha sido ' . $status,
+            'tipo' => 'alerta'
+        ]);
+
+        return $pago;
     }
 }

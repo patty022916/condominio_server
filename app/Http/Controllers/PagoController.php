@@ -51,4 +51,28 @@ class PagoController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Valida el pago dinamicamnente
+     *Envía la notificación al usuario que realizo el pago
+     * @param Request $request
+     * 
+     * @return [type]
+     * 
+     */
+    public function validatePaymentProcess(Request $request)
+    {
+        try {
+            $pago = $request->validate([
+                'pago_id' => 'required|exists:pagos,id',
+                'status' => 'required|in:pendiente,pagado,rechazado',
+            ]);
+
+            $pago = Pago::validatePaymentProcess($pago['pago_id'], $pago['status']);
+
+            return response()->json($pago, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }
