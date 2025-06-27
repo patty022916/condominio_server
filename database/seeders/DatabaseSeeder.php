@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             DepartmentSeeder::class,
             ProviderSeeder::class,
-            GastoSeeder::class
+            GastoSeeder::class,
+            CuotaSeeder::class
         ]);
 
         User::factory()->create([
