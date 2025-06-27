@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Apartamentos;
 use App\Models\Gasto;
+use App\Models\Reporte;
 use Carbon\Carbon;
 
 
@@ -38,6 +39,17 @@ class ReporteController extends Controller
             $pdf = Pdf::loadView('NominaProvedores', compact('gastosDeNomina'));
             //return $pdf->stream('apartamentos.pdf');
             return $pdf->download('nomina_provedores.pdf');
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public  function morosos(Request $request)
+    {
+        try {
+            $morosos_generales =  Reporte::listarMorosos();
+            $pdf = Pdf::loadView('morosos', compact('morosos_generales'));
+            //  return $pdf->stream('apartamentos.pdf');
+            return $pdf->download('morosos.pdf');
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

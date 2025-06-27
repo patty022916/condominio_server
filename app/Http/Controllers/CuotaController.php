@@ -217,6 +217,7 @@ class CuotaController extends Controller
     public function cuotasPorApartamento($id_usuario)
     {
         try {
+            //todo siempre va a sacar la cuota del mes actual
             $fecha = now();
             $apartamentos_usuario = Apartamentos::getApartmentsForUser($id_usuario);
             $cuotas = CuotaController::generarCuotaPorApartamento($fecha);
