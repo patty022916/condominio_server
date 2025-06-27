@@ -55,6 +55,18 @@ class ReporteController extends Controller
         }
     }
 
+    public  function morososPersonal(Request $request)
+    {
+        try {
+            $morosos_generales =  Reporte::listarMorososPersonal();
+            $pdf = Pdf::loadView('MorosoPersonal', compact('morosos_generales'));
+            //  return $pdf->stream('apartamentos.pdf');
+            return $pdf->download('MorosoPersonal.pdf');
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function GastosGenerales(Request $request)
     {
         try {

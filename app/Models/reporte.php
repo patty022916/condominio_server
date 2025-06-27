@@ -31,4 +31,30 @@ class Reporte extends Model
             ['nombre' => 'Tomás Salas', 'apartamento' => 'D405', 'deuda' => 155.00, 'cuota' => 38.75, 'fecha_de_la_deuda' => '2025-06-05']
         ];
     }
+
+    public static function listarMorososPersonal()
+    {
+        return  [
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 120.50, 'cuota' => 30.00, 'fecha_de_la_deuda' => '2025-06-01'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 75.00, 'cuota' => 25.00, 'fecha_de_la_deuda' => '2025-06-05'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 200.00, 'cuota' => 50.00, 'fecha_de_la_deuda' => '2025-05-28'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 150.00, 'cuota' => 50.00, 'fecha_de_la_deuda' => '2025-06-10'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 90.00, 'cuota' => 30.00, 'fecha_de_la_deuda' => '2025-06-02'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 60.00, 'cuota' => 20.00, 'fecha_de_la_deuda' => '2025-06-03'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 180.00, 'cuota' => 45.00, 'fecha_de_la_deuda' => '2025-05-30'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 220.00, 'cuota' => 55.00, 'fecha_de_la_deuda' => '2025-06-06'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 130.00, 'cuota' => 32.50, 'fecha_de_la_deuda' => '2025-06-04'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 95.00, 'cuota' => 23.75, 'fecha_de_la_deuda' => '2025-06-08'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 105.00, 'cuota' => 35.00, 'fecha_de_la_deuda' => '2025-06-01'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 70.00, 'cuota' => 17.50, 'fecha_de_la_deuda' => '2025-05-29'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 160.00, 'cuota' => 40.00, 'fecha_de_la_deuda' => '2025-06-09'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 110.00, 'cuota' => 27.50, 'fecha_de_la_deuda' => '2025-06-11'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 85.00, 'cuota' => 21.25, 'fecha_de_la_deuda' => '2025-06-07'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 190.00, 'cuota' => 47.50, 'fecha_de_la_deuda' => '2025-06-03'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 100.00, 'cuota' => 25.00, 'fecha_de_la_deuda' => '2025-06-06'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 210.00, 'cuota' => 52.50, 'fecha_de_la_deuda' => '2025-06-10'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 140.00, 'cuota' => 35.00, 'fecha_de_la_deuda' => '2025-06-02'],
+            ['nombre' => 'Fernando Gil', 'apartamento' => 'A1', 'deuda' => 155.00, 'cuota' => 38.75, 'fecha_de_la_deuda' => '2025-06-05']
+        ];
+    }
 }
