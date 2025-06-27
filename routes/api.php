@@ -12,6 +12,7 @@ use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\CuotaController;
 use App\Http\Controllers\DeudaApartamentoController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\PagoController;
 
 
 
@@ -34,6 +35,10 @@ Route::post('/gasto', [GastoController::class, 'createGastos']);
 Route::put('/gasto/{id}', [GastoController::class, 'actualizarGasto']);
 Route::get('/gasto', [GastoController::class, 'listarGatos']);
 Route::delete('gasto/{id}', [GastoController::class, 'eliminarGasto']);
+
+//PAGOS DE USUARIOS
+Route::post('/pago-usuario', [PagoController::class, 'SaleOfUser']);
+Route::get('/pago-usuario/{id_usuario?}', [PagoController::class, 'listarPagosUsuarios']);
 
 
 // PROVEEDORES

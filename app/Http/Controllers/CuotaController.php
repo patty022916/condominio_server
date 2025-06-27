@@ -73,7 +73,7 @@ class CuotaController extends Controller
     public function generarCuotaPorApartamento($fecha_gastos)
     {
         try {
-
+            $id_cuota = null;
             //* Obtenemos tass bcv
             $tasas_bcv = CuotaController::obtenerTasaBcv();
 
@@ -81,12 +81,21 @@ class CuotaController extends Controller
             $gastos = Gasto::whereMonth('fecha', $fecha_gastos->month)
                 ->whereYear('fecha', $fecha_gastos->year)->get();
 
+            //*Lista de cuotas para obtener el id si existe
+            $coutas = Cuota::whereMonth('fecha', $fecha_gastos->month)
+                ->whereYear('fecha', $fecha_gastos->year)->get();
+
+            if (count($coutas) != 0) {
+                $id_cuota = $coutas->first()->id;
+            }
+
             if (count($gastos) == 0) {
                 return ['error' => 'No hay gastos para la fecha indicada'];
             }
 
-            //* Desglose de gastos
+            //* Desglose de gastos | asignamos id de la cuota
             $desglose_gastos = new \stdClass();
+            $desglose_gastos->id = $id_cuota;
             $tipos = ['gasto_fijo', 'gasto_comun', 'gasto_extraordinario', 'gasto_total'];
 
             //* Inicializar propiedades en 0
@@ -168,8 +177,8 @@ class CuotaController extends Controller
             ];
 
             $cuota = Cuota::whereMonth('fecha', $fecha->month)
-                          ->whereYear('fecha', $fecha->year)
-                          ->first();
+                ->whereYear('fecha', $fecha->year)
+                ->first();
 
             if (count((array) $cuota)  > 0) throw new \Exception('Ya existe una cuota para la fecha indicada');
 

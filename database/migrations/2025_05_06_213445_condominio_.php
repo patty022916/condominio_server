@@ -8,7 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Tabla roles
+        /**
+         * Tabla destinada a guardar los roles de los usuarios
+         * *Tabla Activa
+         */
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
@@ -16,7 +19,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabla usuarios
+        /**
+         * Tabla destinada a guardar los usuarios
+         * *Tabla Activa
+         */
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
@@ -28,7 +34,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabla proveedores (corregido)
+        /**
+         * Tabla destinada a guardar los proveedores
+         * *Tabla Activa
+         */
         Schema::create('proveedores', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
@@ -37,17 +46,26 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabla cuotas
+        /**
+         * Tabla destinada a guardar las cuotas de los apartamentos
+         * generadas según los gastos creados por administración 
+         * depende de la tabla 'gastos'
+         * *Tabla Activa
+         */
         Schema::create('cuotas', function (Blueprint $table) {
             $table->id();
             $table->string('descripcion')->nullable();
+            //MONTO usd
             $table->double('monto');
             $table->integer('periodo');
             $table->date('fecha');
             $table->timestamps();
         });
 
-        // Tabla apartamentos
+        /**
+         * Tabla destinada a guardar los apartamentos
+         * *Tabla Activa
+         */
         Schema::create('apartamentos', function (Blueprint $table) {
             $table->id();
             $table->string('piso');
@@ -61,39 +79,40 @@ return new class extends Migration
             $table->unique('inquilino_id');
         });
 
-        // Tabla gastos
+        /**
+         * Tabla destinada a guardar los gastos del edificio
+         * para crear las cuotas a pagar
+         * *Tabla Activa
+         */
         Schema::create('gastos', function (Blueprint $table) {
             $table->id();
             $table->string('descripcion');
             $table->decimal('monto', 10, 2);
-            $table->enum('tipo_gasto', ['fijo', 'comun', 'extraordinario']);// cambiado el ultimo tipo
+            $table->enum('tipo_gasto', ['fijo', 'comun', 'extraordinario']); // cambiado el ultimo tipo
             $table->datetime('fecha');
             $table->boolean('recurrente');
             $table->foreignId('id_proveedor')->nullable()->constrained('proveedores')->nullOnDelete();
             $table->timestamps();
         });
-        
-           // Historial de Gasto
-        Schema::create('pagos_gastos', function (Blueprint $table) {
-            $table->id(); // ID autoincremental
-            $table->foreignId('id_gasto')->constrained('gastos')->onDelete('cascade'); // Relación con tabla gastos
-            $table->decimal('monto', 10, 2); // Monto del gasto con hasta 99999999.99
-            $table->string('url'); // Ruta o enlace al comprobante o documento
-            $table->timestamp('created_at')->useCurrent(); // Fecha y hora de creación
-        });
 
-        // Tabla notificaciones
+        /**
+         * Tabla desninada a guardar las notificaciones de los usuarios, administradores etc
+         * *Tabla Activa
+         */
         Schema::create('notificaciones', function (Blueprint $table) {
             $table->id();
             $table->string('titulo');
             $table->text('mensaje')->nullable();
-            $table->enum('tipo', ['cobro','reunion','alerta','general']);
+            $table->enum('tipo', ['cobro', 'reunion', 'alerta', 'general']);
             $table->foreignId('id_usuario')->constrained('usuarios')->cascadeOnDelete();
             $table->timestamp('leida_at')->nullable();
             $table->timestamps();
         });
-        
-        // Tabla deudas_apartamentos
+
+        /**
+         * Tabla destinada a guardar las deudas de los apartamentos
+         * !Tabla inactiva
+         */
         Schema::create('deudas_apartamentos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_usuario')->constrained('usuarios')->cascadeOnDelete();
@@ -103,21 +122,31 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Tabla pagos
+        /**
+         * Tabla pagos, dedicada a los usuarios
+         * Se guardara los pagos de los usuarios haciendo referencie a la tabla 'historial_pago'
+         * *Tabla Activa
+         */
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_apartamento')->constrained('apartamentos')->cascadeOnDelete();
             $table->foreignId('id_usuario')->constrained('usuarios')->cascadeOnDelete();
-            $table->decimal('monto', 10, 2);
-            $table->date('fecha_pago');
-            $table->string('url')->nullable();
-            $table->enum('estatus', ['pendiente', 'pagado'])->default('pendiente');
+            $table->foreignId('id_cuota')->constrained('cuotas')->restrictOnDelete();
+            $table->enum('status', ['pendiente', 'pagado', 'rechazado'])->default('pendiente');
             $table->enum('forma_pago', ['parcial', 'completo']);
-            $table->foreignId('id_cuota')->nullable()->constrained('cuotas')->nullOnDelete();
+            //MONTO BOLIVARES
+            $table->decimal('monto', 10, 2);
+            $table->string('referencia');
+            $table->string('url');
             $table->timestamps();
         });
 
-        // Tabla fondos_condominio
+        /**
+         * Tabla destinada a guardar los fondos del condominio   
+         * tanto en dolares y bs, se guardaran los movimientos de los fondos
+         * realizado por administración como : compra de dolares, antena, internet
+         * !tabla inactiva
+         */
         Schema::create('fondos_condominio', function (Blueprint $table) {
             $table->id();
             $table->enum('tipo_movimiento', ['ingreso', 'egreso']);
@@ -135,7 +164,7 @@ return new class extends Migration
     {
         // Eliminar las tablas en orden inverso para evitar problemas de claves foráneas
         Schema::dropIfExists('fondos_condominio');
-        Schema::dropIfExists('pagos_gastos');
+        Schema::dropIfExists('historial_pago');
         Schema::dropIfExists('pagos');
         Schema::dropIfExists('deudas_apartamentos');
         Schema::dropIfExists('notificaciones');
