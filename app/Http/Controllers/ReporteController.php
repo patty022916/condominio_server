@@ -94,4 +94,26 @@ class ReporteController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    public function constanciaSolvencia(Request $request)
+    {
+        try {
+
+            $pdf = Pdf::loadView('ConstanciaSolvencia');
+            //return $pdf->stream('constancia_solvencia.pdf');
+            return $pdf->download('constancia_solvencia.pdf');
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    public function constanciaResidencia(Request $request)
+    {
+        try {
+
+            $pdf = Pdf::loadView('ConstanciaRecidencia');
+            //return $pdf->stream('constancia_residencia.pdf');
+            return $pdf->download('constancia_solvencia.pdf');
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

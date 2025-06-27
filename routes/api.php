@@ -78,3 +78,5 @@ Route::get('/reporte/nomina', [ReporteController::class, 'nominaProveedores']);
 Route::post('/reporte/gastos', [ReporteController::class, 'GastosGenerales']);
 Route::get('/reporte/morosos', [ReporteController::class, 'morosos']);
 Route::get('/reporte/morosos-personal', [ReporteController::class, 'morososPersonal']);
+Route::get('/reporte/constancia-residencia', [ReporteController::class, 'constanciaResidencia']);
+Route::get('/reporte/constancia-solvencia', [ReporteController::class, 'constanciaSolvencia']);
