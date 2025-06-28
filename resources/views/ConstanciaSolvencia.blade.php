@@ -19,13 +19,17 @@
     <img src="{{ $logoPath }}" alt="Logo" width="150"> -->
 
     <div style="text-align: center;">
+        <b> CONJUNTO RESIDENCIAL PARQUE RESIDENCIAL LA VIÑA</b>
+        <br>
+        Av. José Tadeo Monagas, Maturín, Estado Monagas
+        <br>
         Junta de Condominio
         <br>
         RIF: J-XXXXXXXX-X
         <br>
         Teléfono: (0000) 0000000
         <br>
-        Correo: contacto@residenciallavina.com
+        Correo: @residenciallavina.com
         <br>
         <br>
         <h2 style="color:#014693">CONSTANCIA DE SOLVENCIA DE CONDOMINIO</h2>
